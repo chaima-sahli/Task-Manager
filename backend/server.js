@@ -1,8 +1,9 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
+require("dotenv").config();
 
-require('./config/mongoose');
+const express = require("express");
+const cors = require("cors");
+
+require("./config/mongoose");
 
 const app = express();
 
@@ -10,16 +11,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Basic route to test if server is running
-app.get('/', (req, res) => {
-  res.json({ message: 'Task Manager API is running!' });
-});
+//! Routes
+app.use("/api/auth", require("./routes/auth.routes"));
 
-// add later
-// app.use('/api/auth', authRoutes);
-// app.use('/api/tasks', taskRoutes);
+// test route
+app.get("/", (req, res) => {
+  res.json({ message: "Task Manager API is running!" });
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(` Server running on port ${PORT}`);
 });
