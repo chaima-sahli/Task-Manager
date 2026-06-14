@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { DndContext, closestCorners, DragOverlay, pointerWithin } from '@dnd-kit/core';
+import { DndContext, closestCorners, DragOverlay } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useAuth } from '../contexts/AuthContext';
 import { getTasks, updateTask, updateTaskPositions, createTask, deleteTask } from '../services/api';
@@ -41,9 +41,7 @@ const KanbanBoard = () => {
   const handleDragStart = (event) => {
     const { active } = event;
     const task = tasks.find(t => t._id === active.id);
-    if (task) {
-      setActiveTask(task);
-    }
+    setActiveTask(task);
   };
 
   const handleDragEnd = async (event) => {
@@ -52,15 +50,36 @@ const KanbanBoard = () => {
 
     if (!over) return;
 
-    const activeTaskData = tasks.find(t => t._id === active.id);
-    if (!activeTaskData) return;
+    const activeTask = tasks.find(t => t._id === active.id);
+    const overTask = tasks.find(t => t._id === over.id);
+    const overColumn = columns.find(c => c.id === over.id);
 
-    let newStatus = activeTaskData.status;
-    let newPosition = activeTaskData.position;
+    let newStatus = activeTask.status;
+    let newPosition = activeTask.position;
 
-    // Check if dropping on a column
-    if (over.data?.current?.type === 'column') {
-      newStatus = over.data.current.status;
+    if (overTask && overTask.status === activeTask.status) {
+      // Reorder within same column
+      const columnTasks = getTasksByStatus(activeTask.status);
+      const oldIndex = columnTasks.findIndex(t => t._id === active.id);
+      const newIndex = columnTasks.findIndex(t => t._id === over.id);
+      
+      const updatedTasks = [...columnTasks];
+      const [movedTask] = updatedTasks.splice(oldIndex, 1);
+      updatedTasks.splice(newIndex, 0, movedTask);
+      
+      // Update positions
+      const updates = updatedTasks.map((task, idx) => ({
+        id: task._id,
+        status: activeTask.status,
+        position: idx
+      }));
+      
+      await updateTaskPositions(token, updates);
+      fetchTasks();
+    } 
+    else if (overColumn) {
+      // Move to different column
+      newStatus = overColumn.id;
       const columnTasks = getTasksByStatus(newStatus);
       newPosition = columnTasks.length;
       
@@ -69,30 +88,7 @@ const KanbanBoard = () => {
         position: newPosition 
       });
       fetchTasks();
-      toast.success(`Moved to ${columns.find(c => c.id === newStatus)?.title}`);
-    }
-    // Check if dropping on another task
-    else if (over.data?.current?.type === 'task') {
-      const overTask = tasks.find(t => t._id === over.id);
-      if (overTask && overTask.status === activeTaskData.status) {
-        // Reorder within same column
-        const columnTasks = getTasksByStatus(activeTaskData.status);
-        const oldIndex = columnTasks.findIndex(t => t._id === active.id);
-        const newIndex = columnTasks.findIndex(t => t._id === over.id);
-        
-        const updatedTasks = [...columnTasks];
-        const [movedTask] = updatedTasks.splice(oldIndex, 1);
-        updatedTasks.splice(newIndex, 0, movedTask);
-        
-        const updates = updatedTasks.map((task, idx) => ({
-          id: task._id,
-          status: activeTaskData.status,
-          position: idx
-        }));
-        
-        await updateTaskPositions(token, updates);
-        fetchTasks();
-      }
+      toast.success(`Moved to ${overColumn.title}`);
     }
   };
 
@@ -123,7 +119,7 @@ const KanbanBoard = () => {
 
   return (
     <DndContext 
-      collisionDetection={pointerWithin}
+      collisionDetection={closestCorners}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
@@ -140,14 +136,7 @@ const KanbanBoard = () => {
         ))}
       </div>
       <DragOverlay>
-        {activeTask ? (
-          <div className="bg-white rounded-xl shadow-lg p-4 opacity-90">
-            <h4 className="font-medium">{activeTask.title}</h4>
-            {activeTask.description && (
-              <p className="text-xs mt-1 opacity-60">{activeTask.description}</p>
-            )}
-          </div>
-        ) : null}
+        {activeTask ? <TaskCard task={activeTask} isDragging /> : null}
       </DragOverlay>
     </DndContext>
   );

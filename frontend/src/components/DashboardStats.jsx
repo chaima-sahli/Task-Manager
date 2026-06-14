@@ -7,29 +7,34 @@ const DashboardStats = ({ tasks }) => {
   };
 
   const statCards = [
-    { label: 'Total', value: stats.total, icon: '📋', bg: '#F7B7DA' },
-    { label: 'Completed', value: stats.completed, icon: '✓', bg: '#B6CAEC' },
-    { label: 'In Progress', value: stats.inProgress, icon: '→', bg: '#F6D76A' },
-    { label: 'High Priority', value: stats.highPriority, icon: '⚠', bg: '#F7B7DA' },
+    { label: 'total', value: stats.total, icon: '📋', bg: '#FDE8F3' },
+    { label: 'completed', value: stats.completed, icon: '✓', bg: '#E8F0FA' },
+    { label: 'in progress', value: stats.inProgress, icon: '→', bg: '#FEF3D0' },
+    { label: 'high priority', value: stats.highPriority, icon: '⚠', bg: '#FDE8F3' },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
       {statCards.map((stat, idx) => (
         <div 
           key={idx}
-          className="bg-white rounded-xl p-5"
-          style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)' }}
+          className="bg-white rounded-2xl p-6 hover:transform hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all"
+          style={{ 
+            boxShadow: '4px 4px 0 0 #131214',
+            border: '2px solid #131214'
+          }}
         >
           <div className="flex items-center justify-between mb-3">
-            <span className="text-2xl">{stat.icon}</span>
+            <span className="text-3xl">{stat.icon}</span>
             <div 
-              className="w-8 h-8 rounded-full opacity-20"
-              style={{ backgroundColor: stat.bg }}
-            ></div>
+              className="w-10 h-10 rounded-full flex items-center justify-center border-2"
+              style={{ backgroundColor: stat.bg, borderColor: '#131214' }}
+            >
+              <span className="text-sm font-bold" style={{ color: '#131214' }}>{stat.value}</span>
+            </div>
           </div>
-          <p className="text-2xl font-bold mb-0.5">{stat.value}</p>
-          <p className="text-xs opacity-60">{stat.label}</p>
+          <p className="text-xs font-bold uppercase tracking-wider" style={{ color: '#131214', opacity: 0.6 }}>{stat.label}</p>
+          <p className="text-3xl font-black mt-1" style={{ color: '#131214' }}>{stat.value}</p>
         </div>
       ))}
     </div>
