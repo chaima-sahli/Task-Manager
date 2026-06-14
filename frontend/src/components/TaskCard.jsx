@@ -54,19 +54,31 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
     }
   };
 
-  const handleDelete = async () => {
-    if (confirm('Delete this task?')) {
+  const handleDelete = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Delete clicked for task:', task._id);
+    
+    const confirmDelete = window.confirm('Delete this task?');
+    console.log('User confirmed:', confirmDelete);
+    
+    if (confirmDelete) {
       try {
-        await deleteTask(token, task._id);
+        const result = await deleteTask(token, task._id);
+        console.log('Delete result:', result);
         onRefresh();
         toast.success('Task deleted');
       } catch (error) {
+        console.error('Delete error:', error);
         toast.error('Failed to delete');
       }
     }
   };
 
-  const handleEditClick = () => {
+  const handleEditClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Edit clicked');
     setIsEditing(true);
   };
 
@@ -140,9 +152,9 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
     <div
       ref={setNodeRef}
       style={style}
-      className="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition-all"
+      className="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition-all relative"
     >
-      {/* Drag handle - only this area is draggable */}
+      {/* Drag handle */}
       <div
         {...attributes}
         {...listeners}
@@ -152,14 +164,6 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
           <h4 className="font-medium flex-1 pr-2" style={{ color: '#131214' }}>
             {task.title}
           </h4>
-          <button
-            onClick={handleDelete}
-            className="text-gray-300 hover:text-red-500 transition text-lg leading-none"
-            style={{ cursor: 'pointer' }}
-            onMouseDown={(e) => e.stopPropagation()}
-          >
-            ×
-          </button>
         </div>
         
         {task.description && (
@@ -179,14 +183,24 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
             {currentPriority.text}
           </span>
         </div>
-        <button
-          onClick={handleEditClick}
-          className="text-xs text-gray-400 hover:text-gray-600 transition"
-          style={{ cursor: 'pointer' }}
-          onMouseDown={(e) => e.stopPropagation()}
-        >
-          Edit
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleEditClick}
+            className="text-xs text-gray-400 hover:text-gray-600 transition"
+            style={{ cursor: 'pointer' }}
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            Edit
+          </button>
+          <button
+            onClick={handleDelete}
+            className="text-xs text-gray-400 hover:text-red-500 transition"
+            style={{ cursor: 'pointer' }}
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            Delete
+          </button>
+        </div>
       </div>
     </div>
   );
