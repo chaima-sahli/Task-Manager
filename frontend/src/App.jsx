@@ -9,7 +9,10 @@ function App() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#FAF4E3' }}>
-        <div className="text-2xl animate-pulse" style={{ color: '#131214' }}>loading...</div>
+        <div className="text-center">
+          <div className="text-4xl mb-2">🌀</div>
+          <p style={{ color: '#131214', opacity: 0.7 }}>loading...</p>
+        </div>
       </div>
     );
   }
@@ -17,7 +20,7 @@ function App() {
   return (
     <>
       <Toaster position="top-right" />
-      {!user ? <Login /> : <Dashboard />}
+      {user ? <Dashboard /> : <Login />}
     </>
   );
 }

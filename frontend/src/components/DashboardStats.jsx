@@ -18,7 +18,7 @@ const DashboardStats = ({ tasks }) => {
       {statCards.map((stat, idx) => (
         <div 
           key={idx}
-          className="bg-white rounded-2xl p-6 hover:transform hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all"
+          className="bg-white rounded-2xl p-6 transition-all"
           style={{ 
             boxShadow: '4px 4px 0 0 #131214',
             border: '2px solid #131214'

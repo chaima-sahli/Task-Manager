@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { DndContext, closestCorners, DragOverlay } from '@dnd-kit/core';
+import { DndContext, closestCorners, DragOverlay, pointerWithin } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useAuth } from '../contexts/AuthContext';
-import { getTasks, updateTask, updateTaskPositions, createTask, deleteTask } from '../services/api';
+import { getTasks, updateTask, updateTaskPositions, createTask } from '../services/api';
 import TaskCard from './TaskCard';
 import Column from './Column';
 import toast from 'react-hot-toast';
@@ -14,9 +14,9 @@ const KanbanBoard = () => {
   const [activeTask, setActiveTask] = useState(null);
 
   const columns = [
-    { id: 'todo', title: 'to do', icon: '○', color: '#F7B7DA' },
-    { id: 'inprogress', title: 'in progress', icon: '→', color: '#F6D76A' },
-    { id: 'done', title: 'done', icon: '✓', color: '#B6CAEC' }
+    { id: 'todo', title: 'To Do', icon: '○', color: '#F7B7DA' },
+    { id: 'inprogress', title: 'In Progress', icon: '◔', color: '#F6D76A' },
+    { id: 'done', title: 'Done', icon: '✓', color: '#B6CAEC' }
   ];
 
   useEffect(() => {
@@ -35,60 +35,79 @@ const KanbanBoard = () => {
   };
 
   const getTasksByStatus = (status) => {
-    return tasks.filter(task => task.status === status).sort((a, b) => a.position - b.position);
+ if (!tasks || !Array.isArray(tasks)) return [];
+  return tasks.filter(task => task.status === status).sort((a, b) => a.position - b.position);
   };
 
   const handleDragStart = (event) => {
+    console.log('Drag started:', event.active.id);
     const { active } = event;
     const task = tasks.find(t => t._id === active.id);
-    setActiveTask(task);
+    if (task) {
+      setActiveTask(task);
+    }
   };
 
   const handleDragEnd = async (event) => {
+    console.log('Drag ended:', event);
     const { active, over } = event;
     setActiveTask(null);
 
-    if (!over) return;
+    if (!over) {
+      console.log('No drop target');
+      return;
+    }
 
-    const activeTask = tasks.find(t => t._id === active.id);
-    const overTask = tasks.find(t => t._id === over.id);
-    const overColumn = columns.find(c => c.id === over.id);
+    const activeTaskData = tasks.find(t => t._id === active.id);
+    if (!activeTaskData) {
+      console.log('No active task data');
+      return;
+    }
 
-    let newStatus = activeTask.status;
-    let newPosition = activeTask.position;
+    console.log('Active task:', activeTaskData);
+    console.log('Over target:', over);
 
-    if (overTask && overTask.status === activeTask.status) {
-      // Reorder within same column
-      const columnTasks = getTasksByStatus(activeTask.status);
-      const oldIndex = columnTasks.findIndex(t => t._id === active.id);
-      const newIndex = columnTasks.findIndex(t => t._id === over.id);
-      
-      const updatedTasks = [...columnTasks];
-      const [movedTask] = updatedTasks.splice(oldIndex, 1);
-      updatedTasks.splice(newIndex, 0, movedTask);
-      
-      // Update positions
-      const updates = updatedTasks.map((task, idx) => ({
-        id: task._id,
-        status: activeTask.status,
-        position: idx
-      }));
-      
-      await updateTaskPositions(token, updates);
-      fetchTasks();
-    } 
-    else if (overColumn) {
-      // Move to different column
-      newStatus = overColumn.id;
+    let newStatus = activeTaskData.status;
+    let newPosition = activeTaskData.position;
+
+    // Check if dropping on a column
+    if (over.data?.current?.type === 'column') {
+      newStatus = over.data.current.status;
       const columnTasks = getTasksByStatus(newStatus);
       newPosition = columnTasks.length;
+      
+      console.log(`Moving to column: ${newStatus}`);
       
       await updateTask(token, active.id, { 
         status: newStatus, 
         position: newPosition 
       });
       fetchTasks();
-      toast.success(`Moved to ${overColumn.title}`);
+      toast.success(`Moved to ${columns.find(c => c.id === newStatus)?.title}`);
+    }
+    // Check if dropping on another task
+    else if (over.data?.current?.type === 'task') {
+      const overTask = tasks.find(t => t._id === over.id);
+      if (overTask && overTask.status === activeTaskData.status) {
+        const columnTasks = getTasksByStatus(activeTaskData.status);
+        const oldIndex = columnTasks.findIndex(t => t._id === active.id);
+        const newIndex = columnTasks.findIndex(t => t._id === over.id);
+        
+        console.log(`Reordering within column from ${oldIndex} to ${newIndex}`);
+        
+        const updatedTasks = [...columnTasks];
+        const [movedTask] = updatedTasks.splice(oldIndex, 1);
+        updatedTasks.splice(newIndex, 0, movedTask);
+        
+        const updates = updatedTasks.map((task, idx) => ({
+          id: task._id,
+          status: activeTaskData.status,
+          position: idx
+        }));
+        
+        await updateTaskPositions(token, updates);
+        fetchTasks();
+      }
     }
   };
 
@@ -119,7 +138,7 @@ const KanbanBoard = () => {
 
   return (
     <DndContext 
-      collisionDetection={closestCorners}
+      collisionDetection={pointerWithin}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
@@ -136,7 +155,17 @@ const KanbanBoard = () => {
         ))}
       </div>
       <DragOverlay>
-        {activeTask ? <TaskCard task={activeTask} isDragging /> : null}
+        {activeTask ? (
+          <div 
+            className="bg-white rounded-xl p-4 opacity-90"
+            style={{ 
+              boxShadow: '3px 3px 0 0 #131214',
+              border: '1.5px solid #131214'
+            }}
+          >
+            <h4 className="font-medium">{activeTask.title}</h4>
+          </div>
+        ) : null}
       </DragOverlay>
     </DndContext>
   );
