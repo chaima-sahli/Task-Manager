@@ -7,25 +7,29 @@ const DashboardStats = ({ tasks }) => {
   };
 
   const statCards = [
-    { label: 'total tasks', value: stats.total, icon: '📋' },
-    { label: 'completed', value: stats.completed, icon: '✓' },
-    { label: 'in progress', value: stats.inProgress, icon: '→' },
-    { label: 'high priority', value: stats.highPriority, icon: '⚠' },
+    { label: 'Total', value: stats.total, icon: '📋', bg: '#F7B7DA' },
+    { label: 'Completed', value: stats.completed, icon: '✓', bg: '#B6CAEC' },
+    { label: 'In Progress', value: stats.inProgress, icon: '→', bg: '#F6D76A' },
+    { label: 'High Priority', value: stats.highPriority, icon: '⚠', bg: '#F7B7DA' },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
       {statCards.map((stat, idx) => (
-        <div key={idx} className="p-6 border-2 transition-all duration-200 hover:translate-y-[-4px]" 
-             style={{ borderColor: '#131214', backgroundColor: 'white' }}>
-          <div className="flex items-start justify-between mb-3">
-            <div className="text-3xl">{stat.icon}</div>
-            <div className="w-8 h-8 rounded-full" style={{ backgroundColor: '#F6D76A' }}></div>
+        <div 
+          key={idx}
+          className="bg-white rounded-xl p-5"
+          style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)' }}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-2xl">{stat.icon}</span>
+            <div 
+              className="w-8 h-8 rounded-full opacity-20"
+              style={{ backgroundColor: stat.bg }}
+            ></div>
           </div>
-          <p className="text-sm uppercase tracking-wide mb-1" style={{ color: '#131214', opacity: 0.6 }}>
-            {stat.label}
-          </p>
-          <p className="text-4xl font-bold" style={{ color: '#131214' }}>{stat.value}</p>
+          <p className="text-2xl font-bold mb-0.5">{stat.value}</p>
+          <p className="text-xs opacity-60">{stat.label}</p>
         </div>
       ))}
     </div>

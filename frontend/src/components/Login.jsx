@@ -1,129 +1,167 @@
-import { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import toast from 'react-hot-toast';
+import { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
   const { login, register } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     let result;
     if (isLogin) {
       result = await login(email, password);
     } else {
       result = await register(username, email, password);
     }
-    
+
     if (result.success) {
-      toast.success(isLogin ? 'Welcome back! ✨' : 'Account created! 🎉');
+      toast.success(isLogin ? "Welcome back!" : "Account created!");
     } else {
       toast.error(result.error);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: '#FAF4E3' }}>
-      <div className="max-w-md w-full">
-        {/* Decorative shapes */}
-        <div className="relative">
-          <div className="absolute top-0 -left-16 w-32 h-32 rounded-full" style={{ backgroundColor: '#F7B7DA', opacity: 0.3 }}></div>
-          <div className="absolute bottom-0 -right-16 w-40 h-40 rounded-full" style={{ backgroundColor: '#B6CAEC', opacity: 0.3 }}></div>
-          
-          {/* Main card  */}
-          <div className="relative bg-white p-10" style={{ border: '2px solid #131214' }}>
-            {/* Hand-drawn style header */}
-            <div className="text-center mb-10">
-              <div className="inline-block mb-4">
-                <div className="relative">
-                  <div className="text-6xl">✨</div>
-                  <div className="absolute -top-2 -right-2 w-3 h-3 rounded-full" style={{ backgroundColor: '#F6D76A' }}></div>
-                </div>
-              </div>
-              <h1 className="text-5xl font-bold mb-2" style={{ color: '#131214', letterSpacing: '-0.02em' }}>
-                taskorbit
-              </h1>
-              <p className="text-sm" style={{ color: '#131214', opacity: 0.6 }}>organize the chaos</p>
-            </div>
-            
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {!isLogin && (
-                <div>
-                  <label className="block text-sm font-medium mb-1" style={{ color: '#131214' }}>
-                    what should we call you?
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g., chaim"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="w-full px-4 py-3 bg-white border-2 transition-all duration-200"
-                    style={{ borderColor: '#131214', outline: 'none' }}
-                    onFocus={(e) => e.target.style.borderColor = '#F7B7DA'}
-                    onBlur={(e) => e.target.style.borderColor = '#131214'}
-                    required
-                  />
-                </div>
-              )}
-              <div>
-                <label className="block text-sm font-medium mb-1" style={{ color: '#131214' }}>
-                  email
-                </label>
-                <input
-                  type="email"
-                  placeholder="hello@post.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 bg-white border-2 transition-all duration-200"
-                  style={{ borderColor: '#131214', outline: 'none' }}
-                  onFocus={(e) => e.target.style.borderColor = '#F7B7DA'}
-                  onBlur={(e) => e.target.style.borderColor = '#131214'}
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1" style={{ color: '#131214' }}>
-                  password
-                </label>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-white border-2 transition-all duration-200"
-                  style={{ borderColor: '#131214', outline: 'none' }}
-                  onFocus={(e) => e.target.style.borderColor = '#F7B7DA'}
-                  onBlur={(e) => e.target.style.borderColor = '#131214'}
-                  required
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full py-3 font-medium transition-all duration-200 hover:translate-x-1"
-                style={{ backgroundColor: '#F6D76A', color: '#131214', border: '2px solid #131214' }}
-              >
-                {isLogin ? '→ let me in ←' : '→ create account ←'}
-              </button>
-            </form>
-            
-            <button
-              onClick={() => setIsLogin(!isLogin)}
-              className="w-full mt-5 text-sm transition-all duration-200 hover:underline"
-              style={{ color: '#131214', opacity: 0.7 }}
-            >
-              {isLogin ? "no account? start one" : "already have one? sign in"}
-            </button>
+    <div
+      className='min-h-screen flex items-center justify-center p-4'
+      style={{ backgroundColor: "#FAF4E3" }}
+    >
+      {/* Brutalist background elements */}
+      <div
+        className='fixed top-0 left-0 w-64 h-64'
+        style={{
+          backgroundColor: "#F7B7DA",
+          transform: "rotate(-15deg) translate(-30px, -30px)",
+        }}
+      ></div>
+      <div
+        className='fixed bottom-0 right-0 w-96 h-96'
+        style={{
+          backgroundColor: "#B6CAEC",
+          transform: "rotate(25deg) translate(40px, 40px)",
+        }}
+      ></div>
+
+      <div className='relative w-full max-w-md'>
+        {/* Sticker/decal */}
+        <div className='absolute -top-6 -right-6 z-10 rotate-12'>
+          <div
+            className='px-3 py-1 text-xs font-bold uppercase'
+            style={{ backgroundColor: "#F6D76A", border: "2px solid #131214" }}
+          >
+            Organized Chaos{" "}
           </div>
         </div>
-        
-        {/* Quirky footer */}
-        <p className="text-center text-xs mt-6" style={{ color: '#131214', opacity: 0.5 }}>
-          made with ☕ and bad ideas
-        </p>
+
+        {/* Main card - neo brutalist */}
+        <div
+          className='relative bg-white border-4 border-black p-8'
+          style={{ boxShadow: "12px 12px 0 0 #131214" }}
+        >
+          <div className='text-center mb-8'>
+            <div className='inline-block mb-4'>
+              <div className='text-7xl transform -rotate-6 hover:rotate-0 transition-transform'>
+                ✨
+              </div>
+            </div>
+            <h1
+              className='text-6xl font-black mb-2 uppercase tracking-tighter'
+              style={{ color: "#131214" }}
+            >
+              task
+              <br />
+              orbit
+            </h1>
+            <div className='flex items-center justify-center gap-2 mt-3'>
+              <div className='w-2 h-2 bg-black'></div>
+              <p className='text-xs font-mono uppercase tracking-wider'>
+                beta v1.0
+              </p>
+              <div className='w-2 h-2 bg-black'></div>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className='space-y-4'>
+            {!isLogin && (
+              <div>
+                <label className='block text-xs font-bold uppercase mb-1 tracking-wider'>
+                  Username
+                </label>
+                <input
+                  type='text'
+                  placeholder='e.g., chaim'
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className='w-full px-4 py-3 border-2 border-black bg-white font-mono'
+                  style={{ boxShadow: "inset 2px 2px 0 0 rgba(0,0,0,0.1)" }}
+                  required
+                />
+              </div>
+            )}
+            <div>
+              <label className='block text-xs font-bold uppercase mb-1 tracking-wider'>
+                Email
+              </label>
+              <input
+                type='email'
+                placeholder='hello@post.com'
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className='w-full px-4 py-3 border-2 border-black bg-white font-mono'
+                style={{ boxShadow: "inset 2px 2px 0 0 rgba(0,0,0,0.1)" }}
+                required
+              />
+            </div>
+            <div>
+              <label className='block text-xs font-bold uppercase mb-1 tracking-wider'>
+                Password
+              </label>
+              <input
+                type='password'
+                placeholder='••••••••'
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className='w-full px-4 py-3 border-2 border-black bg-white font-mono'
+                style={{ boxShadow: "inset 2px 2px 0 0 rgba(0,0,0,0.1)" }}
+                required
+              />
+            </div>
+            <button
+              type='submit'
+              className='w-full py-4 font-black uppercase tracking-wider text-lg border-4 border-black'
+              style={{
+                backgroundColor: "#F6D76A",
+                boxShadow: "6px 6px 0 0 #131214",
+              }}
+            >
+              {isLogin ? "→ enter ←" : "→ create ←"}
+            </button>
+          </form>
+
+          <button
+            onClick={() => setIsLogin(!isLogin)}
+            className='w-full mt-6 text-sm font-mono underline hover:no-underline'
+            style={{ color: "#131214" }}
+          >
+            {isLogin
+              ? "[ no account? start one ]"
+              : "[ already have one? sign in ]"}
+          </button>
+        </div>
+
+        {/* Footer note */}
+        <div className='text-center mt-8'>
+          <p
+            className='text-xs font-mono'
+            style={{ color: "#131214", opacity: 0.6 }}
+          >
+            made with ☕ and chai
+          </p>
+        </div>
       </div>
     </div>
   );
