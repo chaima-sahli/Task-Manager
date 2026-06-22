@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
-import { DndContext, closestCorners, DragOverlay, pointerWithin } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { DndContext, DragOverlay, pointerWithin } from '@dnd-kit/core';
 import { useAuth } from '../contexts/AuthContext';
-import { getTasks, updateTask, updateTaskPositions, createTask } from '../services/api';
-import TaskCard from './TaskCard';
+import { updateTask, updateTaskPositions, createTask } from '../services/api';
 import Column from './Column';
 import toast from 'react-hot-toast';
 
@@ -29,6 +27,15 @@ const KanbanBoard = ({ tasks, onTasksUpdate }) => {
     if (!tasks || !Array.isArray(tasks)) return [];
     return tasks.filter(task => task.status === status).sort((a, b) => a.position - b.position);
   };
+
+const getEmptyMessage = (status) => {
+  const messages = {
+    todo: 'nothing waiting...',
+    inprogress: 'no work in progress...',
+    done: 'nothing completed yet...'
+  };
+  return messages[status] || 'empty...';
+};
 
   const handleDragStart = (event) => {
     console.log('Drag started:', event.active.id);
