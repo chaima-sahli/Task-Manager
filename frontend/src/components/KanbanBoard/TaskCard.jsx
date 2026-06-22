@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { updateTask, deleteTask } from '../services/api';
+import { updateTask, deleteTask } from '../../services/api';
 import toast from 'react-hot-toast';
 
 const TaskCard = ({ task, onRefresh, token, columnColor }) => {

@@ -1,7 +1,7 @@
 import { useAuth } from './contexts/AuthContext';
 import Login from './components/Login';
-import Dashboard from './components/Dashboard';
 import { Toaster } from 'react-hot-toast';
+import Dashboard from './components/Dashboard/Dashboard';
 
 function App() {
   const { user, loading } = useAuth();
