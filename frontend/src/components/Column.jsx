@@ -11,7 +11,8 @@ const Column = ({ column, tasks, onCreateTask, onRefresh, token }) => {
     }
   });
 
-  console.log(`Column ${column.id} isOver:`, isOver);
+  // Add more detailed logging
+  console.log(`Column ${column.id} - isOver: ${isOver}, tasks: ${tasks.length}`);
 
   const columnConfig = {
     todo: {
@@ -40,15 +41,16 @@ const Column = ({ column, tasks, onCreateTask, onRefresh, token }) => {
     <div className="flex flex-col h-full">
       <div 
         ref={setNodeRef}
-        className={`bg-white rounded-2xl overflow-hidden transition-all duration-150 ${
-          isOver ? 'ring-2 ring-black' : ''
+        className={`bg-white rounded-2xl overflow-hidden transition-all duration-150 flex flex-col h-full ${
+          isOver ? 'ring-4 ring-black' : ''
         }`}
         style={{ 
           boxShadow: '6px 6px 0 0 #131214',
           border: '2px solid #131214'
         }}
       >
-        <div className="p-4 border-b-2" style={{ backgroundColor: config.bgLight, borderColor: '#131214' }}>
+        {/* Header */}
+        <div className="p-4 border-b-2 flex-shrink-0" style={{ backgroundColor: config.bgLight, borderColor: '#131214' }}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="text-xl">{config.icon}</div>
@@ -58,7 +60,7 @@ const Column = ({ column, tasks, onCreateTask, onRefresh, token }) => {
               <span className="text-sm font-bold" style={{ color: '#131214' }}>{tasks.length}</span>
               <button
                 onClick={onCreateTask}
-                className="w-7 h-7 rounded-full flex items-center justify-center hover:scale-105 transition font-bold"
+                className="w-7 h-7 rounded-full flex items-center justify-center hover:scale-105 transition font-bold flex-shrink-0"
                 style={{ backgroundColor: config.bgColor, color: '#131214', border: '2px solid #131214' }}
               >
                 <span className="text-lg">+</span>
@@ -67,7 +69,8 @@ const Column = ({ column, tasks, onCreateTask, onRefresh, token }) => {
           </div>
         </div>
 
-        <div className="p-3 min-h-[500px] space-y-3">
+        {/* Tasks container */}
+        <div className="p-3 space-y-3 flex-1 overflow-y-auto min-h-[100px]">
           <SortableContext
             items={tasks.map(t => t._id)}
             strategy={verticalListSortingStrategy}
