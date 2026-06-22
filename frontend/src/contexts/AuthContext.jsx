@@ -11,13 +11,25 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (token) {
-      // Verify token is valid (you can add token verification endpoint later)
+    const checkAuth = async () => {
+      const storedToken = localStorage.getItem('token');
+      const storedUser = localStorage.getItem('user');
+      
+      if (storedToken && storedUser) {
+        try {
+          setToken(storedToken);
+          setUser(JSON.parse(storedUser));
+        } catch (error) {
+          console.error('Failed to restore auth:', error);
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+        }
+      }
       setLoading(false);
-    } else {
-      setLoading(false);
-    }
-  }, [token]);
+    };
+    
+    checkAuth();
+  }, []);
 
   const login = async (email, password) => {
     try {
@@ -25,6 +37,7 @@ export const AuthProvider = ({ children }) => {
       setUser(data.user);
       setToken(data.token);
       localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
       return { success: true };
     } catch (error) {
       return { success: false, error: error.message };
@@ -37,6 +50,7 @@ export const AuthProvider = ({ children }) => {
       setUser(data.user);
       setToken(data.token);
       localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
       return { success: true };
     } catch (error) {
       return { success: false, error: error.message };
@@ -47,6 +61,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setToken(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
   };
 
   return (

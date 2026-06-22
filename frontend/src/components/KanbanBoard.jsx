@@ -7,9 +7,8 @@ import TaskCard from './TaskCard';
 import Column from './Column';
 import toast from 'react-hot-toast';
 
-const KanbanBoard = () => {
+const KanbanBoard = ({ tasks, onTasksUpdate }) => {
   const { token } = useAuth();
-  const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTask, setActiveTask] = useState(null);
 
@@ -19,24 +18,16 @@ const KanbanBoard = () => {
     { id: 'done', title: 'Done', icon: '✓', color: '#B6CAEC' }
   ];
 
+  // Set loading to false once tasks are available
   useEffect(() => {
-    fetchTasks();
-  }, []);
-
-  const fetchTasks = async () => {
-    try {
-      const data = await getTasks(token);
-      setTasks(data);
-    } catch (error) {
-      toast.error('Failed to load tasks');
-    } finally {
+    if (tasks && Array.isArray(tasks)) {
       setLoading(false);
     }
-  };
+  }, [tasks]);
 
   const getTasksByStatus = (status) => {
- if (!tasks || !Array.isArray(tasks)) return [];
-  return tasks.filter(task => task.status === status).sort((a, b) => a.position - b.position);
+    if (!tasks || !Array.isArray(tasks)) return [];
+    return tasks.filter(task => task.status === status).sort((a, b) => a.position - b.position);
   };
 
   const handleDragStart = (event) => {
@@ -82,7 +73,7 @@ const KanbanBoard = () => {
         status: newStatus, 
         position: newPosition 
       });
-      fetchTasks();
+      onTasksUpdate();  // ← Changed from fetchTasks()
       toast.success(`Moved to ${columns.find(c => c.id === newStatus)?.title}`);
     }
     // Check if dropping on another task
@@ -106,7 +97,7 @@ const KanbanBoard = () => {
         }));
         
         await updateTaskPositions(token, updates);
-        fetchTasks();
+        onTasksUpdate();  // ← Changed from fetchTasks()
       }
     }
   };
@@ -121,7 +112,7 @@ const KanbanBoard = () => {
     
     try {
       await createTask(token, newTask);
-      fetchTasks();
+      onTasksUpdate();  // ← Changed from fetchTasks()
       toast.success('Task created');
     } catch (error) {
       toast.error('Failed to create task');
@@ -149,7 +140,7 @@ const KanbanBoard = () => {
             column={column}
             tasks={getTasksByStatus(column.id)}
             onCreateTask={() => handleCreateTask(column.id)}
-            onRefresh={fetchTasks}
+            onRefresh={onTasksUpdate}  // ← Changed from fetchTasks
             token={token}
           />
         ))}
