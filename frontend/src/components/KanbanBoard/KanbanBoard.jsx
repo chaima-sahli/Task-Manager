@@ -28,9 +28,8 @@ const KanbanBoard = ({ tasks, onTasksUpdate }) => {
 
   const getTasksByStatus = (status) => {
     if (!tasks || !Array.isArray(tasks)) return [];
-    return tasks
-      .filter((task) => task.status === status)
-      .sort((a, b) => a.position - b.position);
+    
+    return tasks.filter(task => task.status === status);
   };
 
   const handleDragStart = (event) => {
