@@ -9,6 +9,9 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
   const [editTitle, setEditTitle] = useState(task.title);
   const [editDescription, setEditDescription] = useState(task.description || '');
   const [editPriority, setEditPriority] = useState(task.priority || 'medium');
+  const [editDueDate, setEditDueDate] = useState(
+    task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : ''
+  );
   
   const {
     attributes,
@@ -37,14 +40,84 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
     high: { text: 'High', icon: '♬', color: '#F7B7DA' }
   };
 
-  const currentPriority = priorityConfig[task.priority];
+  const currentPriority = priorityConfig[task.priority] || priorityConfig.medium;
+
+  // 🆕 Due date badge logic
+  const getDueDateBadge = () => {
+    if (!task.dueDate) return null;
+    
+    const now = new Date();
+    const dueDate = new Date(task.dueDate);
+    const diffTime = dueDate - now;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    // Today
+    if (diffDays === 0) {
+      return { 
+        label: 'today', 
+        color: '#F6D76A', 
+        icon: '📌',
+        textColor: '#131214'
+      };
+    }
+    // Tomorrow
+    if (diffDays === 1) {
+      return { 
+        label: 'tomorrow', 
+        color: '#B6CAEC', 
+        icon: '📌',
+        textColor: '#131214'
+      };
+    }
+    // Overdue
+    if (diffDays < 0) {
+      return { 
+        label: `${Math.abs(diffDays)}d overdue`, 
+        color: '#F7B7DA', 
+        icon: '⚠️',
+        textColor: '#131214'
+      };
+    }
+    // Upcoming (2-7 days)
+    if (diffDays <= 7) {
+      return { 
+        label: `${diffDays}d`, 
+        color: '#E8F0FA', 
+        icon: '📅',
+        textColor: '#131214'
+      };
+    }
+    // Future (more than 7 days)
+    if (diffDays <= 30) {
+      return { 
+        label: `${diffDays}d`, 
+        color: '#FAF4E3', 
+        icon: '📅',
+        textColor: '#131214'
+      };
+    }
+    // Far future
+    const dueDateFormatted = dueDate.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric' 
+    });
+    return { 
+      label: dueDateFormatted, 
+      color: '#FDE8F3', 
+      icon: '📅',
+      textColor: '#131214'
+    };
+  };
+
+  const dueDateBadge = getDueDateBadge();
 
   const handleUpdate = async () => {
     try {
       await updateTask(token, task._id, {
         title: editTitle,
         description: editDescription,
-        priority: editPriority
+        priority: editPriority,
+        dueDate: editDueDate || null
       });
       setIsEditing(false);
       onRefresh();
@@ -125,6 +198,20 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
             ))}
           </div>
         </div>
+
+        {/* 🆕 Due date picker in edit mode */}
+        <div className="mb-4">
+          <label className="block text-xs font-medium mb-2" style={{ color: '#131214', opacity: 0.6 }}>
+            Due Date
+          </label>
+          <input
+            type="date"
+            value={editDueDate}
+            onChange={(e) => setEditDueDate(e.target.value)}
+            className="w-full p-2 border-2 bg-white"
+            style={{ borderColor: '#131214' }}
+          />
+        </div>
         
         <div className="flex gap-2">
           <button
@@ -175,14 +262,24 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
       </div>
       
       <div className="flex items-center justify-between mt-3 pt-2 border-t" style={{ borderColor: '#E5E5E5' }}>
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs">{currentPriority.icon}</span>
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {/* Priority badge */}
           <span 
-            className="text-xs px-2 py-0.5 rounded-full font-medium"
+            className="text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-0.5"
             style={{ backgroundColor: currentPriority.color, color: '#131214' }}
           >
-            {currentPriority.text}
+            {currentPriority.icon} {currentPriority.text}
           </span>
+          
+          {/* 🆕 Due date badge */}
+          {dueDateBadge && (
+            <span 
+              className="text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-0.5"
+              style={{ backgroundColor: dueDateBadge.color, color: dueDateBadge.textColor || '#131214' }}
+            >
+              {dueDateBadge.icon} {dueDateBadge.label}
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <button

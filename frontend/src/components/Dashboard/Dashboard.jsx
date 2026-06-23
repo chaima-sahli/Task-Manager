@@ -48,11 +48,10 @@ const Dashboard = () => {
     }
   }, [token]);
 
-  // Quick add task
-  const handleQuickAddTask = async () => {
-    const titleInput = document.getElementById("quickTaskTitle");
-    const title = titleInput?.value.trim();
-
+  // Quick add task - UPDATED to accept object
+  const handleQuickAddTask = async (taskData) => {
+    const { title, dueDate } = taskData;
+    
     if (!title) {
       toast.error("Please enter a task title");
       return;
@@ -64,10 +63,10 @@ const Dashboard = () => {
         description: "",
         status: "todo",
         priority: "medium",
+        dueDate: dueDate || null
       });
 
       setShowQuickAdd(false);
-      if (titleInput) titleInput.value = "";
       fetchTasks();
       toast.success("Task created! ✨");
     } catch (error) {
@@ -108,11 +107,11 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div
-        className='min-h-screen flex items-center justify-center'
+        className="min-h-screen flex items-center justify-center"
         style={{ backgroundColor: "#FAF4E3" }}
       >
-        <div className='text-center'>
-          <div className='text-4xl mb-2'>🌀</div>
+        <div className="text-center">
+          <div className="text-4xl mb-2">🌀</div>
           <p style={{ color: "#131214", opacity: 0.7 }}>
             loading your orbit...
           </p>
@@ -122,10 +121,10 @@ const Dashboard = () => {
   }
 
   return (
-    <div className='min-h-screen' style={{ backgroundColor: "#FAF4E3" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "#FAF4E3" }}>
       <DashboardHeader user={user} logout={logout} />
 
-      <main className='max-w-7xl mx-auto px-6 pt-28 pb-8'>
+      <main className="max-w-7xl mx-auto px-6 pt-28 pb-8">
         <DashboardStats tasks={filteredTasks} />
 
         <DashboardFilters

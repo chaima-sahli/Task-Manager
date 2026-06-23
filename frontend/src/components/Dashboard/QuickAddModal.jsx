@@ -1,10 +1,33 @@
+import { useState } from 'react';
+import toast from 'react-hot-toast';
+
 const QuickAddModal = ({ show, onClose, onAdd }) => {
+  const [title, setTitle] = useState('');
+  const [dueDate, setDueDate] = useState('');
+
   if (!show) return null;
+
+  const handleAdd = () => {
+    if (!title.trim()) {
+      toast.error('Please enter a task title');
+      return;
+    }
+    // Pass both values as an object
+    onAdd({ title: title.trim(), dueDate: dueDate || null });
+    setTitle('');
+    setDueDate('');
+  };
+
+  const handleClose = () => {
+    setTitle('');
+    setDueDate('');
+    onClose();
+  };
 
   return (
     <div
       className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
-      onClick={onClose}
+      onClick={handleClose}
     >
       <div
         className="bg-white p-6 border-2 max-w-md w-full mx-4"
@@ -13,7 +36,7 @@ const QuickAddModal = ({ show, onClose, onAdd }) => {
       >
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-bold" style={{ color: "#131214" }}>
-            Quick Add Task
+            ✨ Quick Add Task
           </h3>
           <div className="flex items-center gap-2">
             <span
@@ -24,7 +47,7 @@ const QuickAddModal = ({ show, onClose, onAdd }) => {
               close
             </span>
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="text-xl font-mono hover:opacity-100 transition p-1"
               style={{ color: "#131214", opacity: 0.4 }}
             >
@@ -39,27 +62,39 @@ const QuickAddModal = ({ show, onClose, onAdd }) => {
           className="w-full px-4 py-2.5 border-2 mb-3 bg-white transition-all duration-200"
           style={{ borderColor: "#131214" }}
           id="quickTaskTitle"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
           autoFocus
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              onAdd();
+              handleAdd();
             }
             if (e.key === "Escape") {
-              onClose();
+              handleClose();
             }
           }}
         />
 
+        {/* Due date in quick add */}
+        <input
+          type="date"
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
+          className="w-full px-4 py-2.5 border-2 mb-3 bg-white transition-all duration-200"
+          style={{ borderColor: "#131214" }}
+          placeholder="Due date (optional)"
+        />
+
         <div className="flex gap-2">
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="px-4 py-2 border-2 transition-all hover:translate-x-0.5"
             style={{ borderColor: "#131214" }}
           >
             Cancel
           </button>
           <button
-            onClick={onAdd}
+            onClick={handleAdd}
             className="px-4 py-2 border-2 font-medium transition-all hover:translate-x-0.5"
             style={{ backgroundColor: "#F6D76A", borderColor: "#131214" }}
           >

@@ -155,6 +155,7 @@ const KanbanBoard = ({ tasks, onTasksUpdate }) => {
       description: "click to edit",
       status: status,
       priority: "medium",
+      dueDate: null
     };
 
     try {
