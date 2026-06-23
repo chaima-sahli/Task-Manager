@@ -18,7 +18,7 @@
   <a href="#-features">Features</a> •
   <a href="#tech-stack">Tech Stack</a> •
   <a href="#api-documentation">API Documentation</a> •
-  <a href="#live-demo">Live Demo (soon)</a> •
+  <a href="#live-demo">Live Demo (soon)</a> 
   
   <br />
   <br />
@@ -137,9 +137,35 @@ taskor/
 | `PUT`    | `/api/tasks/position` | Update task positions | ✅             |
 
 
+## Running Locally
+
+### 1. Clone it
+```bash
+git clone https://github.com/chaima-sahli/Task-Manager.git
+```
+
+### 2. Install dependencies (both backend & frontend)
+```bash
+cd Task-Manager/backend && npm install
+cd ../frontend && npm install
+```
+
+### 3. Add your MongoDB connection in `.env`
+
+### 4. Start both servers
+
+**Terminal 1 - Backend**
+```bash
+cd backend && npm run dev
+```
+
+**Terminal 2 - Frontend**
+```bash
+cd frontend && npm run dev
+```
 
 
-## 👨‍💻 Author
+## ✦ Author ✦
 
 **Chaima Sahli**
 
