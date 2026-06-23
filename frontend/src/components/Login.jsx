@@ -72,9 +72,8 @@ const Login = () => {
               className='text-6xl font-black mb-2 uppercase tracking-tighter'
               style={{ color: "#131214" }}
             >
-              task
-              <br />
-              orbit
+              taskor
+             
             </h1>
             <div className='flex items-center justify-center gap-2 mt-3'>
               <div className='w-2 h-2 bg-black'></div>
