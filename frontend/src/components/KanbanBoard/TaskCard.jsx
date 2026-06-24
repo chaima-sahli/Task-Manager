@@ -4,6 +4,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { updateTask, deleteTask } from "../../services/api";
 import toast from "react-hot-toast";
 import DeleteConfirmModal from "../Dashboard/DeleteConfirmModal";
+import { getTagColor, SUGGESTED_TAGS } from "../../utils/tagColors";
 
 const TaskCard = ({ task, onRefresh, token, columnColor }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -17,6 +18,9 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
   const [editDueDate, setEditDueDate] = useState(
     task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : "",
   );
+
+  const [editTags, setEditTags] = useState(task.tags || []);
+  const [tagInput, setTagInput] = useState("");
 
   const {
     attributes,
@@ -117,6 +121,17 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
 
   const dueDateBadge = getDueDateBadge();
 
+  const handleAddTag = () => {
+    if (tagInput.trim() && !editTags.includes(tagInput.trim())) {
+      setEditTags([...editTags, tagInput.trim()]);
+      setTagInput("");
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove) => {
+    setEditTags(editTags.filter((tag) => tag !== tagToRemove));
+  };
+
   const handleUpdate = async () => {
     try {
       await updateTask(token, task._id, {
@@ -124,6 +139,7 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
         description: editDescription,
         priority: editPriority,
         dueDate: editDueDate || null,
+        tags: editTags,
       });
       setIsEditing(false);
       onRefresh();
@@ -211,7 +227,7 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
           </div>
         </div>
 
-        {/* 🆕 Due date picker in edit mode */}
+        {/*  Due date picker in edit mode */}
         <div className='mb-4'>
           <label
             className='block text-xs font-medium mb-2'
@@ -226,6 +242,101 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
             className='w-full p-2 border-2 bg-white'
             style={{ borderColor: "#131214" }}
           />
+        </div>
+
+        {/* 🆕 Tags Section - Custom Selector */}
+        <div className='mb-4'>
+          <label
+            className='block text-xs font-medium mb-2'
+            style={{ color: "#131214", opacity: 0.6 }}
+          >
+            Tags
+          </label>
+
+          <div className='flex flex-wrap gap-2 mb-2'>
+            {SUGGESTED_TAGS.map((suggestedTag) => {
+              const color = getTagColor(suggestedTag);
+              const isSelected = editTags.includes(suggestedTag);
+              return (
+                <button
+                  key={suggestedTag}
+                  onClick={() => {
+                    if (isSelected) {
+                      setEditTags(editTags.filter((t) => t !== suggestedTag));
+                    } else {
+                      setEditTags([...editTags, suggestedTag]);
+                    }
+                  }}
+                  className={`text-xs px-3 py-1 rounded-full border-2 transition-all hover:scale-105 ${
+                    isSelected ? "opacity-100" : "opacity-40 hover:opacity-70"
+                  }`}
+                  style={{
+                    backgroundColor: isSelected ? color.bg : "transparent",
+                    borderColor: "#131214",
+                    color: isSelected ? color.text : "#131214",
+                  }}
+                >
+                  #{suggestedTag}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Or add custom tag */}
+          <div className='flex gap-2'>
+            <input
+              type='text'
+              value={tagInput}
+              onChange={(e) => setTagInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleAddTag();
+                }
+              }}
+              placeholder='or type your own...'
+              className='flex-1 p-2 border-2 bg-white text-sm'
+              style={{ borderColor: "#131214" }}
+            />
+            <button
+              onClick={handleAddTag}
+              className='px-3 py-1 border-2 text-sm transition-all hover:translate-x-0.5'
+              style={{ borderColor: "#131214", backgroundColor: "#B6CAEC" }}
+            >
+              Add
+            </button>
+          </div>
+
+          {/* Selected tags display */}
+          <div className='flex flex-wrap gap-1.5 mt-3'>
+            {editTags.map((tag) => {
+              const color = getTagColor(tag);
+              return (
+                <span
+                  key={tag}
+                  className='text-xs px-2 py-1 rounded-full flex items-center gap-1 font-medium'
+                  style={{ backgroundColor: color.bg, color: color.text }}
+                >
+                  #{tag}
+                  <button
+                    onClick={() => handleRemoveTag(tag)}
+                    className='hover:opacity-70 text-xs'
+                    style={{ color: color.text }}
+                  >
+                    ✕
+                  </button>
+                </span>
+              );
+            })}
+            {editTags.length === 0 && (
+              <span
+                className='text-xs'
+                style={{ color: "#131214", opacity: 0.3 }}
+              >
+                No tags yet
+              </span>
+            )}
+          </div>
         </div>
 
         <div className='flex gap-2'>
@@ -291,6 +402,24 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
             </p>
           )}
         </div>
+
+        {/*  Tags display */}
+        {task.tags && task.tags.length > 0 && (
+          <div className='flex flex-wrap gap-1 mt-2'>
+            {task.tags.map((tag) => {
+              const color = getTagColor(tag);
+              return (
+                <span
+                  key={tag}
+                  className='text-[10px] px-2 py-0.5 rounded-full font-medium'
+                  style={{ backgroundColor: color.bg, color: color.text }}
+                >
+                  #{tag}
+                </span>
+              );
+            })}
+          </div>
+        )}
 
         <div
           className='flex items-center justify-between mt-3 pt-2 border-t'

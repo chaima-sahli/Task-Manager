@@ -19,6 +19,7 @@ const Dashboard = () => {
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterDueDate, setFilterDueDate] = useState("all");
   const [sortBy, setSortBy] = useState("position");
+  const [filterTag, setFilterTag] = useState("all");
 
   // Keyboard shortcuts
   useKeyboardShortcuts({
@@ -27,6 +28,16 @@ const Dashboard = () => {
     setSearchTerm,
     setShowQuickAdd: () => {}, // No longer needed here
   });
+
+  const getAllTags = () => {
+    const tags = new Set();
+    tasks.forEach((task) => {
+      if (task.tags) {
+        task.tags.forEach((tag) => tags.add(tag));
+      }
+    });
+    return ["all", ...Array.from(tags)];
+  };
 
   // Fetch tasks
   const fetchTasks = async () => {
@@ -92,7 +103,7 @@ const Dashboard = () => {
       const dueDateOnly = new Date(
         dueDate.getFullYear(),
         dueDate.getMonth(),
-        dueDate.getDate()
+        dueDate.getDate(),
       );
 
       switch (filterDueDate) {
@@ -134,7 +145,7 @@ const Dashboard = () => {
       case "priority":
         const priorityOrder = { high: 0, medium: 1, low: 2 };
         return sorted.sort(
-          (a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]
+          (a, b) => priorityOrder[a.priority] - priorityOrder[b.priority],
         );
       case "title":
         return sorted.sort((a, b) => a.title.localeCompare(b.title));
@@ -166,6 +177,13 @@ const Dashboard = () => {
       result = result.filter((task) => task.status === filterStatus);
     }
 
+    // filter tag
+    if (filterTag !== "all") {
+      result = result.filter(
+        (task) => task.tags && task.tags.includes(filterTag),
+      );
+    }
+
     // Due date filter
     result = filterTasksByDueDate(result);
 
@@ -186,6 +204,7 @@ const Dashboard = () => {
     setFilterPriority("all");
     setFilterStatus("all");
     setFilterDueDate("all");
+    setFilterTag("all");
     setSortBy("position");
   };
 
@@ -194,16 +213,17 @@ const Dashboard = () => {
     filterPriority !== "all" ||
     filterStatus !== "all" ||
     filterDueDate !== "all" ||
+    filterTag !== "all" ||
     sortBy !== "position";
 
   if (loading) {
     return (
       <div
-        className="min-h-screen flex items-center justify-center"
+        className='min-h-screen flex items-center justify-center'
         style={{ backgroundColor: "#FAF4E3" }}
       >
-        <div className="text-center">
-          <div className="text-4xl mb-2">🌀</div>
+        <div className='text-center'>
+          <div className='text-4xl mb-2'>🌀</div>
           <p style={{ color: "#131214", opacity: 0.7 }}>
             loading your orbit...
           </p>
@@ -213,10 +233,10 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FAF4E3" }}>
+    <div className='min-h-screen' style={{ backgroundColor: "#FAF4E3" }}>
       <DashboardHeader user={user} logout={logout} />
 
-      <main className="max-w-7xl mx-auto px-6 pt-28 pb-8">
+      <main className='max-w-7xl mx-auto px-6 pt-28 pb-8'>
         <DashboardStats tasks={filteredTasks} />
 
         <DashboardFilters
@@ -230,6 +250,9 @@ const Dashboard = () => {
           setFilterDueDate={setFilterDueDate}
           sortBy={sortBy}
           setSortBy={setSortBy}
+          filterTag={filterTag} 
+          setFilterTag={setFilterTag} 
+          allTags={getAllTags()}
           clearFilters={clearFilters}
           hasActiveFilters={hasActiveFilters}
           getStatusCount={getStatusCount}
@@ -241,7 +264,6 @@ const Dashboard = () => {
 
       {/* Floating Action Group */}
       <FloatingActionGroup onQuickAdd={handleQuickAddTask} />
-
     </div>
   );
 };

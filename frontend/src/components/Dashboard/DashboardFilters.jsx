@@ -5,10 +5,13 @@ const DashboardFilters = ({
   setFilterPriority,
   filterStatus,
   setFilterStatus,
-  filterDueDate, 
-  setFilterDueDate, 
-  sortBy,  
-  setSortBy, 
+  filterDueDate,
+  setFilterDueDate,
+  filterTag,           // 🆕 Add this
+  setFilterTag,        // 🆕 Add this
+  allTags = ['all'],             // 🆕 Add this
+  sortBy,
+  setSortBy,
   clearFilters,
   hasActiveFilters,
   getStatusCount,
@@ -113,7 +116,7 @@ const DashboardFilters = ({
           </div>
         </div>
 
-        {/*  Due Date Filter */}
+        {/* Due Date Filter */}
         <div className="min-w-[150px]">
           <label
             className="block text-xs font-medium mb-1 uppercase tracking-wider"
@@ -146,7 +149,39 @@ const DashboardFilters = ({
           </div>
         </div>
 
-        {/*  Sort By */}
+        {/* 🆕 Tag Filter */}
+        <div className="min-w-[150px]">
+          <label
+            className="block text-xs font-medium mb-1 uppercase tracking-wider"
+            style={{ color: "#131214", opacity: 0.6 }}
+          >
+            tag
+          </label>
+          <div className="relative">
+            <select
+              value={filterTag}
+              onChange={(e) => setFilterTag(e.target.value)}
+              className="w-full px-4 py-2.5 border-2 bg-white appearance-none transition-all duration-200 cursor-pointer"
+              style={{ borderColor: "#131214" }}
+              onFocus={(e) => (e.target.style.borderColor = "#F7B7DA")}
+              onBlur={(e) => (e.target.style.borderColor = "#131214")}
+            >
+              {allTags.map((tag) => (
+                <option key={tag} value={tag}>
+                  {tag === "all" ? "all tags" : `#${tag}`}
+                </option>
+              ))}
+            </select>
+            <div
+              className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+              style={{ color: "#131214", opacity: 0.4 }}
+            >
+              ▼
+            </div>
+          </div>
+        </div>
+
+        {/* Sort By */}
         <div className="min-w-[150px]">
           <label
             className="block text-xs font-medium mb-1 uppercase tracking-wider"
@@ -245,6 +280,14 @@ const DashboardFilters = ({
               style={{ borderColor: "#131214" }}
             >
               📅 {filterDueDate.replace("-", " ")}
+            </span>
+          )}
+          {filterTag !== "all" && (
+            <span
+              className="text-xs px-3 py-1 border flex items-center gap-1"
+              style={{ borderColor: "#131214" }}
+            >
+              # {filterTag}
             </span>
           )}
           {sortBy !== "position" && (
