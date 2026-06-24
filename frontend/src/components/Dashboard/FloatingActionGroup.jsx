@@ -1,18 +1,32 @@
 import { useState } from 'react';
 import QuickAddModal from './QuickAddModal';
 import CalendarView from '../Calendar/CalendarView';
+import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 
 const FloatingActionGroup = ({ onQuickAdd }) => {
   const [showCalendar, setShowCalendar] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showQuickAdd, setShowQuickAdd] = useState(false);
 
+  // Use the consolidated keyboard shortcuts
+  useKeyboardShortcuts({
+    searchTerm: '', // Not needed here
+    showQuickAdd,
+    showCalendar,
+    showShortcuts,
+    setSearchTerm: () => {}, // Not needed here
+    setShowQuickAdd,
+    setShowCalendar,
+    setShowShortcuts,
+  });
+
   // Keyboard shortcuts for quick reference
   const shortcuts = [
     { key: 'n', action: 'New task' },
     { key: '⌘F / Ctrl+F', action: 'Focus search' },
     { key: 'ESC', action: 'Close modal / Clear search' },
-    { key: 'N', action: 'Quick add (fallback)' },
+    { key: '⌘N / Ctrl+N', action: 'Quick add (fallback)' },
+    { key: '⌘C / Ctrl+C', action: 'Open Calendar' },
   ];
 
   return (

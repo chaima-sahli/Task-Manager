@@ -3,8 +3,12 @@ import { useEffect } from 'react';
 export const useKeyboardShortcuts = ({
   searchTerm,
   showQuickAdd,
+  showCalendar,
+  showShortcuts,
   setSearchTerm,
   setShowQuickAdd,
+  setShowCalendar,
+  setShowShortcuts,
 }) => {
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -17,21 +21,46 @@ export const useKeyboardShortcuts = ({
         return;
       }
 
-      // Escape - Close modal first, then clear search
+      // Ctrl+C or Cmd+C - Open Calendar (only if not in input)
+      if ((e.ctrlKey || e.metaKey) && e.key === "c") {
+        if (!isInput && setShowCalendar) {
+          e.preventDefault();
+          e.stopPropagation();
+          setShowCalendar(true);
+        }
+        return;
+      }
+
+      // Escape - Close modals first, then clear search
       if (e.key === "Escape") {
         e.preventDefault();
         e.stopPropagation();
 
-        if (showQuickAdd) {
+        // Close shortcuts modal
+        if (showShortcuts && setShowShortcuts) {
+          setShowShortcuts(false);
+          return;
+        }
+
+        // Close calendar
+        if (showCalendar && setShowCalendar) {
+          setShowCalendar(false);
+          return;
+        }
+
+        // Close quick add
+        if (showQuickAdd && setShowQuickAdd) {
           setShowQuickAdd(false);
           return;
         }
 
+        // Clear search
         if (searchTerm) {
           setSearchTerm("");
           return;
         }
 
+        // Blur active element
         if (document.activeElement) {
           document.activeElement.blur();
         }
@@ -47,10 +76,11 @@ export const useKeyboardShortcuts = ({
         }
       }
 
-      // 'n' key alone - Quick add
+      // 'n' key alone - Quick add (only if not in input)
       if (e.key === "n" && !e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey) {
         if (!isInput) {
           e.preventDefault();
+          e.stopPropagation();
           setShowQuickAdd(true);
           setTimeout(() => {
             document.getElementById("quickTaskTitle")?.focus();
@@ -71,5 +101,5 @@ export const useKeyboardShortcuts = ({
 
     window.addEventListener("keydown", handleKeyDown, true);
     return () => window.removeEventListener("keydown", handleKeyDown, true);
-  }, [searchTerm, showQuickAdd, setSearchTerm, setShowQuickAdd]);
+  }, [searchTerm, showQuickAdd, showCalendar, showShortcuts, setSearchTerm, setShowQuickAdd, setShowCalendar, setShowShortcuts]);
 };
