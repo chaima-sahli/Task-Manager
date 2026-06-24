@@ -1,31 +1,33 @@
-import { useState } from 'react';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { updateTask, deleteTask } from '../../services/api';
-import toast from 'react-hot-toast';
+import { useState } from "react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { updateTask, deleteTask } from "../../services/api";
+import toast from "react-hot-toast";
 
 const TaskCard = ({ task, onRefresh, token, columnColor }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(task.title);
-  const [editDescription, setEditDescription] = useState(task.description || '');
-  const [editPriority, setEditPriority] = useState(task.priority || 'medium');
-  const [editDueDate, setEditDueDate] = useState(
-    task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : ''
+  const [editDescription, setEditDescription] = useState(
+    task.description || "",
   );
-  
+  const [editPriority, setEditPriority] = useState(task.priority || "medium");
+  const [editDueDate, setEditDueDate] = useState(
+    task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : "",
+  );
+
   const {
     attributes,
     listeners,
     setNodeRef,
     transform,
     transition,
-    isDragging
-  } = useSortable({ 
+    isDragging,
+  } = useSortable({
     id: task._id,
     data: {
-      type: 'task',
-      task
-    }
+      type: "task",
+      task,
+    },
   });
 
   const style = {
@@ -35,77 +37,78 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
   };
 
   const priorityConfig = {
-    low: { text: 'Low', icon: '♪', color: '#B6CAEC' },
-    medium: { text: 'Medium', icon: '♫', color: '#F6D76A' },
-    high: { text: 'High', icon: '♬', color: '#F7B7DA' }
+    low: { text: "Low", icon: "♪", color: "#B6CAEC" },
+    medium: { text: "Medium", icon: "♫", color: "#F6D76A" },
+    high: { text: "High", icon: "♬", color: "#F7B7DA" },
   };
 
-  const currentPriority = priorityConfig[task.priority] || priorityConfig.medium;
+  const currentPriority =
+    priorityConfig[task.priority] || priorityConfig.medium;
 
   // 🆕 Due date badge logic
   const getDueDateBadge = () => {
     if (!task.dueDate) return null;
-    
+
     const now = new Date();
     const dueDate = new Date(task.dueDate);
     const diffTime = dueDate - now;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     // Today
     if (diffDays === 0) {
-      return { 
-        label: 'today', 
-        color: '#F6D76A', 
-        icon: '📌',
-        textColor: '#131214'
+      return {
+        label: "today",
+        color: "#F6D76A",
+        icon: "📌",
+        textColor: "#131214",
       };
     }
     // Tomorrow
     if (diffDays === 1) {
-      return { 
-        label: 'tomorrow', 
-        color: '#B6CAEC', 
-        icon: '📌',
-        textColor: '#131214'
+      return {
+        label: "tomorrow",
+        color: "#B6CAEC",
+        icon: "📌",
+        textColor: "#131214",
       };
     }
     // Overdue
     if (diffDays < 0) {
-      return { 
-        label: `${Math.abs(diffDays)}d overdue`, 
-        color: '#F7B7DA', 
-        icon: '⚠️',
-        textColor: '#131214'
+      return {
+        label: `${Math.abs(diffDays)}d overdue`,
+        color: "#F7B7DA",
+        icon: "⚠️",
+        textColor: "#131214",
       };
     }
     // Upcoming (2-7 days)
     if (diffDays <= 7) {
-      return { 
-        label: `${diffDays}d`, 
-        color: '#E8F0FA', 
-        icon: '📅',
-        textColor: '#131214'
+      return {
+        label: `${diffDays}d`,
+        color: "#E8F0FA",
+        icon: "📅",
+        textColor: "#131214",
       };
     }
     // Future (more than 7 days)
     if (diffDays <= 30) {
-      return { 
-        label: `${diffDays}d`, 
-        color: '#FAF4E3', 
-        icon: '📅',
-        textColor: '#131214'
+      return {
+        label: `${diffDays}d`,
+        color: "#FAF4E3",
+        icon: "📅",
+        textColor: "#131214",
       };
     }
     // Far future
-    const dueDateFormatted = dueDate.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric' 
+    const dueDateFormatted = dueDate.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
     });
-    return { 
-      label: dueDateFormatted, 
-      color: '#FDE8F3', 
-      icon: '📅',
-      textColor: '#131214'
+    return {
+      label: dueDateFormatted,
+      color: "#FDE8F3",
+      icon: "📅",
+      textColor: "#131214",
     };
   };
 
@@ -117,26 +120,26 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
         title: editTitle,
         description: editDescription,
         priority: editPriority,
-        dueDate: editDueDate || null
+        dueDate: editDueDate || null,
       });
       setIsEditing(false);
       onRefresh();
-      toast.success('Task updated');
+      toast.success("Task updated");
     } catch (error) {
-      toast.error('Failed to update');
+      toast.error("Failed to update");
     }
   };
 
   const handleDelete = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (confirm('Delete this task?')) {
+    if (confirm("Delete this task?")) {
       try {
         await deleteTask(token, task._id);
         onRefresh();
-        toast.success('Task deleted');
+        toast.success("Task deleted");
       } catch (error) {
-        toast.error('Failed to delete');
+        toast.error("Failed to delete");
       }
     }
   };
@@ -149,48 +152,51 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
 
   if (isEditing) {
     return (
-      <div 
-        className="bg-white rounded-xl p-4"
-        style={{ 
-          boxShadow: '3px 3px 0 0 #131214',
-          border: '1.5px solid #131214'
+      <div
+        className='bg-white rounded-xl p-4'
+        style={{
+          boxShadow: "3px 3px 0 0 #131214",
+          border: "1.5px solid #131214",
         }}
       >
         <input
-          type="text"
+          type='text'
           value={editTitle}
           onChange={(e) => setEditTitle(e.target.value)}
-          className="w-full mb-3 p-2 rounded-lg border focus:outline-none focus:ring-2"
-          style={{ borderColor: '#E5E5E5' }}
-          placeholder="Task title"
+          className='w-full mb-3 p-2 rounded-lg border focus:outline-none focus:ring-2'
+          style={{ borderColor: "#E5E5E5" }}
+          placeholder='Task title'
           autoFocus
         />
         <textarea
           value={editDescription}
           onChange={(e) => setEditDescription(e.target.value)}
-          className="w-full mb-3 p-2 rounded-lg border focus:outline-none focus:ring-2"
-          style={{ borderColor: '#E5E5E5' }}
-          rows="2"
-          placeholder="Description..."
+          className='w-full mb-3 p-2 rounded-lg border focus:outline-none focus:ring-2'
+          style={{ borderColor: "#E5E5E5" }}
+          rows='2'
+          placeholder='Description...'
         />
-        
-        <div className="mb-4">
-          <label className="block text-xs font-medium mb-2" style={{ color: '#131214', opacity: 0.6 }}>
+
+        <div className='mb-4'>
+          <label
+            className='block text-xs font-medium mb-2'
+            style={{ color: "#131214", opacity: 0.6 }}
+          >
             Priority
           </label>
-          <div className="flex gap-2">
-            {['low', 'medium', 'high'].map((priority) => (
+          <div className='flex gap-2'>
+            {["low", "medium", "high"].map((priority) => (
               <button
                 key={priority}
                 onClick={() => setEditPriority(priority)}
                 className={`px-3 py-1.5 rounded-lg text-sm capitalize transition ${
-                  editPriority === priority 
-                    ? 'ring-2 ring-offset-1' 
-                    : 'opacity-60'
+                  editPriority === priority
+                    ? "ring-2 ring-offset-1"
+                    : "opacity-60"
                 }`}
                 style={{
                   backgroundColor: priorityConfig[priority].color,
-                  ringColor: '#131214'
+                  ringColor: "#131214",
                 }}
               >
                 {priority}
@@ -200,32 +206,44 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
         </div>
 
         {/* 🆕 Due date picker in edit mode */}
-        <div className="mb-4">
-          <label className="block text-xs font-medium mb-2" style={{ color: '#131214', opacity: 0.6 }}>
+        <div className='mb-4'>
+          <label
+            className='block text-xs font-medium mb-2'
+            style={{ color: "#131214", opacity: 0.6 }}
+          >
             Due Date
           </label>
           <input
-            type="date"
+            type='date'
             value={editDueDate}
             onChange={(e) => setEditDueDate(e.target.value)}
-            className="w-full p-2 border-2 bg-white"
-            style={{ borderColor: '#131214' }}
+            className='w-full p-2 border-2 bg-white'
+            style={{ borderColor: "#131214" }}
           />
         </div>
-        
-        <div className="flex gap-2">
+
+        <div className='flex gap-2'>
           <button
             onClick={handleUpdate}
-            className="px-3 py-1.5 rounded-lg text-sm font-medium"
-            style={{ backgroundColor: '#131214', color: 'white' }}
+            className='px-4 py-2 border-2 font-medium transition-all hover:translate-x-0.5'
+            style={{
+              borderColor: "#131214",
+              backgroundColor: "#F6D76A",
+              color: "#131214",
+            }}
           >
-            Save
+            ✓ save
           </button>
           <button
             onClick={() => setIsEditing(false)}
-            className="px-3 py-1.5 rounded-lg text-sm border"
+            className='px-4 py-2 border-2 font-medium transition-all hover:translate-x-0.5'
+            style={{
+              borderColor: "#131214",
+              backgroundColor: "#FAF4E3",
+              color: "#131214",
+            }}
           >
-            Cancel
+            ✕ cancel
           </button>
         </div>
       </div>
@@ -236,67 +254,84 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
     <div
       ref={setNodeRef}
       style={style}
-      className="bg-white rounded-xl p-4 transition-all relative"
-      style={{ 
-        boxShadow: '3px 3px 0 0 #131214',
-        border: '1.5px solid #131214'
+      className='bg-white rounded-xl p-4 transition-all relative'
+      style={{
+        boxShadow: "3px 3px 0 0 #131214",
+        border: "1.5px solid #131214",
       }}
     >
       {/* Drag handle area */}
       <div
         {...attributes}
         {...listeners}
-        className="cursor-grab active:cursor-grabbing"
+        className='cursor-grab active:cursor-grabbing'
       >
-        <div className="flex items-start justify-between">
-          <h4 className="font-medium flex-1 pr-2" style={{ color: '#131214' }}>
+        <div className='flex items-start justify-between'>
+          <h4 className='font-medium flex-1 pr-2' style={{ color: "#131214" }}>
             {task.title}
           </h4>
         </div>
-        
+
         {task.description && (
-          <p className="text-xs mt-1" style={{ color: '#131214', opacity: 0.5 }}>
+          <p
+            className='text-xs mt-1'
+            style={{ color: "#131214", opacity: 0.5 }}
+          >
             {task.description}
           </p>
         )}
       </div>
-      
-      <div className="flex items-center justify-between mt-3 pt-2 border-t" style={{ borderColor: '#E5E5E5' }}>
-        <div className="flex items-center gap-1.5 flex-wrap">
+
+      <div
+        className='flex items-center justify-between mt-3 pt-2 border-t'
+        style={{ borderColor: "#E5E5E5" }}
+      >
+        <div className='flex items-center gap-1.5 flex-wrap'>
           {/* Priority badge */}
-          <span 
-            className="text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-0.5"
-            style={{ backgroundColor: currentPriority.color, color: '#131214' }}
+          <span
+            className='text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-0.5'
+            style={{ backgroundColor: currentPriority.color, color: "#131214" }}
           >
             {currentPriority.icon} {currentPriority.text}
           </span>
-          
+
           {/* 🆕 Due date badge */}
           {dueDateBadge && (
-            <span 
-              className="text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-0.5"
-              style={{ backgroundColor: dueDateBadge.color, color: dueDateBadge.textColor || '#131214' }}
+            <span
+              className='text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-0.5'
+              style={{
+                backgroundColor: dueDateBadge.color,
+                color: dueDateBadge.textColor || "#131214",
+              }}
             >
               {dueDateBadge.icon} {dueDateBadge.label}
             </span>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className='flex items-center gap-2'>
           <button
             onClick={handleEditClick}
-            className="text-xs text-gray-400 hover:text-gray-600 transition"
-            style={{ cursor: 'pointer' }}
+            className='text-xs px-3 py-1 font-medium border-2 transition-all hover:translate-x-0.5'
+            style={{
+              borderColor: "#131214",
+              backgroundColor: "#B6CAEC",
+              color: "#131214",
+            }}
             onMouseDown={(e) => e.stopPropagation()}
           >
-            Edit
+            ✎ Edit
           </button>
           <button
             onClick={handleDelete}
-            className="text-xs text-gray-400 hover:text-red-500 transition"
-            style={{ cursor: 'pointer' }}
+            className='text-xs px-3 py-1 font-medium border-2 transition-all hover:translate-x-0.5'
+            style={{
+              borderColor: "#131214",
+              backgroundColor: "#F7B7DA",
+              color: "#131214",
+            }}
             onMouseDown={(e) => e.stopPropagation()}
           >
-            Delete
+            ✕ delete
           </button>
         </div>
       </div>
