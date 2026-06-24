@@ -23,7 +23,7 @@
   <br />
   <br />
   
-  <!-- <img src="https://via.placeholder.com/800x400/FAF4E3/131214?text=Taskor+Screenshot" alt="Taskor Screenshot" width="80%" /> -->
+  <img src="https://via.placeholder.com/800x400/FAF4E3/131214?text=Taskor+Screenshot" alt="Taskor Screenshot" width="80%" />
 </div>
 
 ---
