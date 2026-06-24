@@ -3,9 +3,12 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { updateTask, deleteTask } from "../../services/api";
 import toast from "react-hot-toast";
+import DeleteConfirmModal from "../Dashboard/DeleteConfirmModal";
 
 const TaskCard = ({ task, onRefresh, token, columnColor }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   const [editTitle, setEditTitle] = useState(task.title);
   const [editDescription, setEditDescription] = useState(
     task.description || "",
@@ -130,18 +133,21 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
     }
   };
 
-  const handleDelete = async (e) => {
+  const handleDelete = async () => {
+    try {
+      await deleteTask(token, task._id);
+      onRefresh();
+      toast.success("Task deleted");
+      setShowDeleteModal(false);
+    } catch (error) {
+      toast.error("Failed to delete");
+    }
+  };
+
+  const handleDeleteClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (confirm("Delete this task?")) {
-      try {
-        await deleteTask(token, task._id);
-        onRefresh();
-        toast.success("Task deleted");
-      } catch (error) {
-        toast.error("Failed to delete");
-      }
-    }
+    setShowDeleteModal(true);
   };
 
   const handleEditClick = (e) => {
@@ -251,91 +257,104 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
   }
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className='bg-white rounded-xl p-4 transition-all relative'
-      style={{
-        boxShadow: "3px 3px 0 0 #131214",
-        border: "1.5px solid #131214",
-      }}
-    >
-      {/* Drag handle area */}
+    <>
       <div
-        {...attributes}
-        {...listeners}
-        className='cursor-grab active:cursor-grabbing'
+        ref={setNodeRef}
+        style={style}
+        className='bg-white rounded-xl p-4 transition-all relative group'
+        style={{
+          boxShadow: "3px 3px 0 0 #131214",
+          border: "1.5px solid #131214",
+        }}
       >
-        <div className='flex items-start justify-between'>
-          <h4 className='font-medium flex-1 pr-2' style={{ color: "#131214" }}>
-            {task.title}
-          </h4>
+        {/* Drag handle area */}
+        <div
+          {...attributes}
+          {...listeners}
+          className='cursor-grab active:cursor-grabbing'
+        >
+          <div className='flex items-start justify-between'>
+            <h4
+              className='font-medium flex-1 pr-2'
+              style={{ color: "#131214" }}
+            >
+              {task.title}
+            </h4>
+          </div>
+
+          {task.description && (
+            <p
+              className='text-xs mt-1'
+              style={{ color: "#131214", opacity: 0.5 }}
+            >
+              {task.description}
+            </p>
+          )}
         </div>
 
-        {task.description && (
-          <p
-            className='text-xs mt-1'
-            style={{ color: "#131214", opacity: 0.5 }}
-          >
-            {task.description}
-          </p>
-        )}
-      </div>
-
-      <div
-        className='flex items-center justify-between mt-3 pt-2 border-t'
-        style={{ borderColor: "#E5E5E5" }}
-      >
-        <div className='flex items-center gap-1.5 flex-wrap'>
-          {/* Priority badge */}
-          <span
-            className='text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-0.5'
-            style={{ backgroundColor: currentPriority.color, color: "#131214" }}
-          >
-            {currentPriority.icon} {currentPriority.text}
-          </span>
-
-          {/* 🆕 Due date badge */}
-          {dueDateBadge && (
+        <div
+          className='flex items-center justify-between mt-3 pt-2 border-t'
+          style={{ borderColor: "#E5E5E5" }}
+        >
+          <div className='flex items-center gap-1.5 flex-wrap'>
+            {/* Priority badge */}
             <span
               className='text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-0.5'
               style={{
-                backgroundColor: dueDateBadge.color,
-                color: dueDateBadge.textColor || "#131214",
+                backgroundColor: currentPriority.color,
+                color: "#131214",
               }}
             >
-              {dueDateBadge.icon} {dueDateBadge.label}
+              {currentPriority.icon} {currentPriority.text}
             </span>
-          )}
-        </div>
-        <div className='flex items-center gap-2'>
-          <button
-            onClick={handleEditClick}
-            className='text-xs px-3 py-1 font-medium border-2 transition-all hover:translate-x-0.5'
-            style={{
-              borderColor: "#131214",
-              backgroundColor: "#B6CAEC",
-              color: "#131214",
-            }}
-            onMouseDown={(e) => e.stopPropagation()}
-          >
-            ✎ Edit
-          </button>
-          <button
-            onClick={handleDelete}
-            className='text-xs px-3 py-1 font-medium border-2 transition-all hover:translate-x-0.5'
-            style={{
-              borderColor: "#131214",
-              backgroundColor: "#F7B7DA",
-              color: "#131214",
-            }}
-            onMouseDown={(e) => e.stopPropagation()}
-          >
-            ✕ delete
-          </button>
+
+            {/* 🆕 Due date badge */}
+            {dueDateBadge && (
+              <span
+                className='text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-0.5'
+                style={{
+                  backgroundColor: dueDateBadge.color,
+                  color: dueDateBadge.textColor || "#131214",
+                }}
+              >
+                {dueDateBadge.icon} {dueDateBadge.label}
+              </span>
+            )}
+          </div>
+          <div className='flex items-center gap-2 opacity-40 hover:opacity-100 transition-opacity'>
+            <button
+              onClick={handleEditClick}
+              className='text-xs px-3 py-1 font-medium border-2 bg-transparent transition-all duration-200 hover:translate-x-0.5 hover:scale-105 hover:bg-[#B6CAEC] hover:shadow-[2px_2px_0_0_#131214]'
+              style={{
+                borderColor: "#131214",
+                color: "#131214",
+              }}
+              onMouseDown={(e) => e.stopPropagation()}
+            >
+              ✎ Edit
+            </button>
+            <button
+              onClick={handleDeleteClick}
+              className='text-xs px-3 py-1 font-medium border-2 bg-transparent transition-all duration-200 hover:translate-x-0.5 hover:scale-105 hover:bg-[#F7B7DA] hover:shadow-[2px_2px_0_0_#131214]'
+              style={{
+                borderColor: "#131214",
+                color: "#131214",
+              }}
+              onMouseDown={(e) => e.stopPropagation()}
+            >
+              ✕ delete
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+
+      <DeleteConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDelete}
+        taskTitle={task.title}
+      />
+    </>
   );
 };
 

@@ -75,7 +75,7 @@ const FloatingActionGroup = ({ onQuickAdd }) => {
       {/* Keyboard Shortcuts Modal */}
       {showShortcuts && (
         <div
-          className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50"
           onClick={() => setShowShortcuts(false)}
         >
           <div
@@ -128,7 +128,7 @@ const FloatingActionGroup = ({ onQuickAdd }) => {
       {/* Calendar Modal */}
       {showCalendar && (
         <div
-          className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={() => setShowCalendar(false)}
         >
           <div

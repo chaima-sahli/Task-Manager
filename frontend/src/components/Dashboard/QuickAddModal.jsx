@@ -26,7 +26,7 @@ const QuickAddModal = ({ show, onClose, onAdd }) => {
 
   return (
     <div
-      className="fixed inset-0 bg-black/20 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50"
       onClick={handleClose}
     >
       <div
