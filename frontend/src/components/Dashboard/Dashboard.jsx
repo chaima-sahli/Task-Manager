@@ -263,7 +263,7 @@ const Dashboard = () => {
       </main>
 
       {/* Floating Action Group */}
-      <FloatingActionGroup onQuickAdd={handleQuickAddTask} />
+      <FloatingActionGroup onQuickAdd={handleQuickAddTask} onRefresh={fetchTasks} />
     </div>
   );
 };

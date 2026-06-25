@@ -3,12 +3,16 @@ import QuickAddModal from "./QuickAddModal";
 import CalendarView from "../Calendar/CalendarView";
 import { useKeyboardShortcuts } from "../../hooks/useKeyboardShortcuts";
 import AnalyticsDashboard from "../Analytics/AnalyticsDashboard";
+import ExportImportModal from './ExportImportModal';
 
-const FloatingActionGroup = ({ onQuickAdd }) => {
+
+const FloatingActionGroup = ({ onQuickAdd, onRefresh }) => {
   const [showCalendar, setShowCalendar] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
+    const [showExportImport, setShowExportImport] = useState(false); 
+
 
   // Use the consolidated keyboard shortcuts
   useKeyboardShortcuts({
@@ -37,6 +41,17 @@ const FloatingActionGroup = ({ onQuickAdd }) => {
     <>
       {/* Floating Buttons Group */}
       <div className='fixed bottom-8 right-8 flex flex-col gap-3 z-40'>
+         {/*  Export/Import Button */}
+        <button
+          onClick={() => setShowExportImport(true)}
+          className="w-14 h-14 rounded-full border-2 shadow-[4px_4px_0_0_#131214] transition-all hover:shadow-[6px_6px_0_0_#131214] hover:scale-105 hover:rotate-3 flex items-center justify-center text-2xl font-bold group relative"
+          style={{
+            backgroundColor: '#A8D8EA',
+            borderColor: '#131214',
+          }}
+        >
+          📦
+        </button>
         {/*  Analytics Button */}
         <button
           onClick={() => setShowAnalytics(true)}
@@ -214,6 +229,12 @@ const FloatingActionGroup = ({ onQuickAdd }) => {
           </div>
         </div>
       )}
+        {/* 🆕 Export/Import Modal */}
+      <ExportImportModal
+        isOpen={showExportImport}
+        onClose={() => setShowExportImport(false)}
+        onRefresh={onRefresh}
+      />
     </>
   );
 };

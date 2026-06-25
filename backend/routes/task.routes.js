@@ -4,7 +4,10 @@ const {
   createTask,
   updateTask,
   deleteTask,
-  updateTaskPosition
+  updateTaskPosition,
+  exportCSV,
+  exportTasks,
+  importTasks
 } = require('../controllers/taskController');
 const auth = require('../middleware/auth');
 const router = express.Router();
@@ -16,5 +19,11 @@ router.post('/', createTask);
 router.put('/position', updateTaskPosition); 
 router.put('/:id', updateTask);
 router.delete('/:id', deleteTask);
+
+router.get('/export', exportTasks);
+router.get('/export/csv', exportCSV);
+
+router.post('/import', importTasks);
+
 
 module.exports = router;

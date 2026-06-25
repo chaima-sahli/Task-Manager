@@ -115,10 +115,145 @@ const updateTaskPosition = async (req, res) => {
   }
 };
 
+
+
+//  Export tasks
+const exportTasks = async (req, res) => {
+  try {
+    const tasks = await Task.find({ userId: req.userId })
+      .select('-__v -userId') // Exclude internal fields
+      .lean();
+
+    // Format data for export
+    const exportData = tasks.map(task => ({
+      title: task.title,
+      description: task.description || '',
+      status: task.status,
+      priority: task.priority,
+      dueDate: task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : null,
+      tags: task.tags || [],
+      createdAt: task.createdAt,
+      updatedAt: task.updatedAt
+    }));
+
+    res.json({
+      success: true,
+      count: exportData.length,
+      data: exportData,
+      exportedAt: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Export error:', error);
+    res.status(500).json({ error: 'Failed to export tasks' });
+  }
+};
+
+//  Import tasks
+const importTasks = async (req, res) => {
+  try {
+    const { tasks } = req.body;
+
+    // Validation
+    if (!tasks || !Array.isArray(tasks) || tasks.length === 0) {
+      return res.status(400).json({ 
+        error: 'Invalid data. Please provide an array of tasks.' 
+      });
+    }
+
+    let importedCount = 0;
+    let skippedCount = 0;
+    const importedTasks = [];
+
+    for (const taskData of tasks) {
+      // Validate required fields
+      if (!taskData.title) {
+        skippedCount++;
+        continue;
+      }
+
+      // Clean and prepare task data
+      const newTask = new Task({
+        title: taskData.title.trim(),
+        description: taskData.description || '',
+        status: ['todo', 'inprogress', 'done'].includes(taskData.status) 
+          ? taskData.status 
+          : 'todo',
+        priority: ['low', 'medium', 'high'].includes(taskData.priority) 
+          ? taskData.priority 
+          : 'medium',
+        dueDate: taskData.dueDate ? new Date(taskData.dueDate) : null,
+        tags: Array.isArray(taskData.tags) ? taskData.tags : [],
+        userId: req.userId,
+        position: 0 // Will be updated in bulk
+      });
+
+      await newTask.save();
+      importedCount++;
+      importedTasks.push(newTask);
+    }
+
+    // Reorder all tasks by position
+    const allTasks = await Task.find({ userId: req.userId }).sort({ createdAt: 1 });
+    for (let i = 0; i < allTasks.length; i++) {
+      allTasks[i].position = i;
+      await allTasks[i].save();
+    }
+
+    res.status(201).json({
+      success: true,
+      message: `Imported ${importedCount} tasks successfully. Skipped ${skippedCount} invalid tasks.`,
+      imported: importedCount,
+      skipped: skippedCount,
+      tasks: importedTasks
+    });
+  } catch (error) {
+    console.error('Import error:', error);
+    res.status(500).json({ error: 'Failed to import tasks' });
+  }
+};
+
+//  Export as CSV
+const exportCSV = async (req, res) => {
+  try {
+    const tasks = await Task.find({ userId: req.userId }).lean();
+
+    // Define CSV headers
+    const headers = ['Title', 'Description', 'Status', 'Priority', 'Due Date', 'Tags', 'Created At'];
+    
+    // Build CSV rows
+    const rows = tasks.map(task => [
+      `"${(task.title || '').replace(/"/g, '""')}"`,
+      `"${(task.description || '').replace(/"/g, '""')}"`,
+      task.status || 'todo',
+      task.priority || 'medium',
+      task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '',
+      (task.tags || []).join('; '),
+      new Date(task.createdAt).toISOString().split('T')[0]
+    ]);
+
+    // Combine headers and rows
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.join(','))
+    ].join('\n');
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename=tasks-export-${new Date().toISOString().split('T')[0]}.csv`);
+    res.send(csvContent);
+  } catch (error) {
+    console.error('CSV export error:', error);
+    res.status(500).json({ error: 'Failed to export CSV' });
+  }
+};
+
+
 module.exports = {
   getTasks,
   createTask,
   updateTask,
   deleteTask,
-  updateTaskPosition
+  updateTaskPosition,
+  exportTasks,
+  importTasks,
+  exportCSV
 };
