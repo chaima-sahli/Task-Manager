@@ -30,7 +30,7 @@ const QuickAddModal = ({ show, onClose, onAdd }) => {
       onClick={handleClose}
     >
       <div
-        className="bg-white p-6 border-2 max-w-md w-full mx-4"
+        className="bg-white p-6 border-2 max-w-md w-full mx-4 modal-pop-in"
         style={{ borderColor: "#131214" }}
         onClick={(e) => e.stopPropagation()}
       >

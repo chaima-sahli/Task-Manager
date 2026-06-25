@@ -36,7 +36,7 @@ const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, taskTitle }) => {
       onClick={onClose}
     >
       <div
-        className="bg-white p-6 border-2 max-w-sm w-full mx-4"
+        className="bg-white p-6 border-2 max-w-sm w-full mx-4 modal-pop-in"
         style={{ borderColor: '#131214' }}
         onClick={(e) => e.stopPropagation()}
       >

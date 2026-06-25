@@ -40,7 +40,7 @@ const FloatingActionGroup = ({ onQuickAdd }) => {
         {/*  Analytics Button */}
         <button
           onClick={() => setShowAnalytics(true)}
-          className='w-14 h-14 rounded-full border-2 shadow-[4px_4px_0_0_#131214] transition-all hover:translate-y-[-2px] hover:shadow-[6px_6px_0_0_#131214] flex items-center justify-center text-2xl font-bold group relative'
+          className='w-14 h-14 rounded-full border-2 shadow-[4px_4px_0_0_#131214] transition-all hover:translate-y-[-2px] hover:shadow-[6px_6px_0_0_#131214] hover:scale-105 hover:rotate-3 flex items-center justify-center text-2xl font-bold group relative'
           style={{
             backgroundColor: "#C9E4C5",
             borderColor: "#131214",
@@ -52,7 +52,7 @@ const FloatingActionGroup = ({ onQuickAdd }) => {
         {/* Calendar Button */}
         <button
           onClick={() => setShowCalendar(true)}
-          className='w-14 h-14 rounded-full border-2 shadow-[4px_4px_0_0_#131214] transition-all hover:translate-y-[-2px] hover:shadow-[6px_6px_0_0_#131214] flex items-center justify-center text-2xl font-bold group relative'
+          className='w-14 h-14 rounded-full border-2 shadow-[4px_4px_0_0_#131214] transition-all hover:translate-y-[-2px] hover:shadow-[6px_6px_0_0_#131214] hover:scale-105 hover:rotate-3 flex items-center justify-center text-2xl font-bold group relative'
           style={{
             backgroundColor: "#B6CAEC",
             borderColor: "#131214",
@@ -65,7 +65,7 @@ const FloatingActionGroup = ({ onQuickAdd }) => {
         {/* Keyboard Shortcuts Button */}
         <button
           onClick={() => setShowShortcuts(!showShortcuts)}
-          className='w-14 h-14 rounded-full border-2 shadow-[4px_4px_0_0_#131214] transition-all hover:translate-y-[-2px] hover:shadow-[6px_6px_0_0_#131214] flex items-center justify-center text-2xl font-bold'
+          className='w-14 h-14 rounded-full border-2 shadow-[4px_4px_0_0_#131214] transition-all hover:translate-y-[-2px] hover:shadow-[6px_6px_0_0_#131214] hover:scale-105 hover:rotate-3 flex items-center justify-center text-2xl font-bold'
           style={{
             backgroundColor: "#FDE8F3",
             borderColor: "#131214",
@@ -77,7 +77,7 @@ const FloatingActionGroup = ({ onQuickAdd }) => {
         {/* Quick Add Button (existing) */}
         <button
           onClick={() => setShowQuickAdd(true)}
-          className='w-14 h-14 rounded-full border-2 shadow-[4px_4px_0_0_#131214] transition-all hover:translate-y-[-2px] hover:shadow-[6px_6px_0_0_#131214] flex items-center justify-center text-3xl font-bold group'
+          className='w-14 h-14 rounded-full border-2 shadow-[4px_4px_0_0_#131214] transition-all hover:translate-y-[-2px] hover:scale-105 hover:rotate-3 hover:shadow-[6px_6px_0_0_#131214] flex items-center justify-center text-3xl font-bold group'
           style={{
             backgroundColor: "#F6D76A",
             borderColor: "#131214",

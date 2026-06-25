@@ -100,7 +100,7 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
       <div
         ref={setNodeRef}
         style={style}
-        className="bg-white rounded-xl p-4 transition-all relative group"
+        className="bg-white rounded-xl p-4 transition-all relative group hover-lift float-up"
         style={{
           boxShadow: "3px 3px 0 0 #131214",
           border: "1.5px solid #131214",
@@ -166,7 +166,7 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
           <div className="flex items-center gap-2 opacity-40 hover:opacity-100 transition-opacity">
             <button
               onClick={handleEditClick}
-              className="text-xs px-3 py-1 font-medium border-2 bg-transparent transition-all duration-200 hover:translate-x-0.5 hover:scale-105 hover:bg-[#B6CAEC] hover:shadow-[2px_2px_0_0_#131214]"
+              className="text-xs px-3 py-1 font-medium border-2 bg-transparent transition-all duration-200 hover:translate-x-0.5 hover:scale-105 hover:bg-[#B6CAEC] hover:shadow-[2px_2px_0_0_#131214] btn-squish"
               style={{ borderColor: "#131214", color: "#131214" }}
               onMouseDown={(e) => e.stopPropagation()}
             >
@@ -174,7 +174,7 @@ const TaskCard = ({ task, onRefresh, token, columnColor }) => {
             </button>
             <button
               onClick={handleDeleteClick}
-              className="text-xs px-3 py-1 font-medium border-2 bg-transparent transition-all duration-200 hover:translate-x-0.5 hover:scale-105 hover:bg-[#F7B7DA] hover:shadow-[2px_2px_0_0_#131214]"
+              className="text-xs px-3 py-1 font-medium border-2 bg-transparent transition-all duration-200 hover:translate-x-0.5 hover:scale-105 hover:bg-[#F7B7DA] hover:shadow-[2px_2px_0_0_#131214] btn-squish"
               style={{ borderColor: "#131214", color: "#131214" }}
               onMouseDown={(e) => e.stopPropagation()}
             >

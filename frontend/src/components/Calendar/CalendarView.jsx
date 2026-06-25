@@ -122,16 +122,16 @@ const CalendarView = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-20">
+      <div className="flex justify-center items-center py-20 ">
         <div className="text-2xl animate-pulse" style={{ color: '#131214' }}>loading calendar...</div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto modal-pop-in">
       {/* Calendar Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 ">
         <h2 className="text-2xl font-bold" style={{ color: '#131214' }}>
           📅 {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
         </h2>

@@ -7,9 +7,9 @@ const DashboardFilters = ({
   setFilterStatus,
   filterDueDate,
   setFilterDueDate,
-  filterTag,           // 🆕 Add this
-  setFilterTag,        // 🆕 Add this
-  allTags = ['all'],             // 🆕 Add this
+  filterTag,           
+  setFilterTag,        
+  allTags = ['all'],             
   sortBy,
   setSortBy,
   clearFilters,

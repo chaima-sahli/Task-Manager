@@ -35,7 +35,7 @@ const DashboardStats = ({ tasks }) => {
               className="w-7 h-7 rounded-full flex items-center justify-center border-2"
               style={{ backgroundColor: stat.bg, borderColor: '#131214' }}
             >
-              <span className="text-xs font-bold" style={{ color: '#131214' }}>{stat.value}</span>
+              <span className="text-xs font-bold transition-all duration-300 hover:scale-105" style={{ color: '#131214' }}>{stat.value}</span>
             </div>
           </div>
           <p className="text-2xl font-black mt-1" style={{ color: '#131214' }}>{stat.value}</p>

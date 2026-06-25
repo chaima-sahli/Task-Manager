@@ -90,7 +90,7 @@ const EditTaskModal = ({ isOpen, onClose, task, onRefresh, token }) => {
       onClick={onClose}
     >
       <div
-        className='bg-white border-2 w-full max-w-lg max-h-[100vh] overflow-y-auto'
+        className='bg-white border-2 w-full max-w-lg max-h-[100vh] overflow-y-auto modal-pop-in'
         style={{ borderColor: "#131214" }}
         onClick={(e) => e.stopPropagation()}
       >

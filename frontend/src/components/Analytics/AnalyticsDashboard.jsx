@@ -242,7 +242,7 @@ const AnalyticsDashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-20">
+      <div className="flex justify-center items-center py-20 ">
         <div className="text-2xl animate-pulse" style={{ color: '#131214' }}>
           loading analytics...
         </div>
@@ -252,7 +252,7 @@ const AnalyticsDashboard = () => {
 
   if (tasks.length === 0) {
     return (
-      <div className="text-center py-20">
+      <div className="text-center py-20 ">
         <div className="text-6xl mb-4">📊</div>
         <h2 className="text-2xl font-bold" style={{ color: '#131214' }}>
           No tasks yet
@@ -265,7 +265,7 @@ const AnalyticsDashboard = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 modal-pop-in">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
