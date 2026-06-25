@@ -4,11 +4,13 @@ export const useKeyboardShortcuts = ({
   searchTerm,
   showQuickAdd,
   showCalendar,
+  showAnalytics,
   showShortcuts,
   setSearchTerm,
   setShowQuickAdd,
   setShowCalendar,
   setShowShortcuts,
+  setShowAnalytics
 }) => {
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -45,6 +47,11 @@ export const useKeyboardShortcuts = ({
         // Close calendar
         if (showCalendar && setShowCalendar) {
           setShowCalendar(false);
+          return;
+        }
+        // Close analytics
+        if (showAnalytics && setShowAnalytics) {
+          setShowAnalytics(false);
           return;
         }
 
@@ -88,6 +95,16 @@ export const useKeyboardShortcuts = ({
         }
       }
 
+      // 'n' key alone - Quick add (only if not in input)
+      if (e.key === "a" && !e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey) {
+        if (!isInput) {
+          e.preventDefault();
+          e.stopPropagation();
+          setShowAnalytics(true);
+        }
+        return;
+      }
+
       // Ctrl+Shift+N - Fallback quick add
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "n") {
         e.preventDefault();
@@ -101,5 +118,5 @@ export const useKeyboardShortcuts = ({
 
     window.addEventListener("keydown", handleKeyDown, true);
     return () => window.removeEventListener("keydown", handleKeyDown, true);
-  }, [searchTerm, showQuickAdd, showCalendar, showShortcuts, setSearchTerm, setShowQuickAdd, setShowCalendar, setShowShortcuts]);
+  }, [searchTerm, showQuickAdd, showCalendar, showAnalytics, showShortcuts, setSearchTerm, setShowQuickAdd, setShowCalendar, setShowShortcuts, setShowAnalytics]);
 };

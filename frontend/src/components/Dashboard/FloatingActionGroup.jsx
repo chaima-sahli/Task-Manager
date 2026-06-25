@@ -15,10 +15,12 @@ const FloatingActionGroup = ({ onQuickAdd }) => {
     searchTerm: "", // Not needed here
     showQuickAdd,
     showCalendar,
+    showAnalytics,
     showShortcuts,
     setSearchTerm: () => {}, // Not needed here
     setShowQuickAdd,
     setShowCalendar,
+    setShowAnalytics,
     setShowShortcuts,
   });
 
