@@ -7,6 +7,7 @@ const ExportImportModal = ({ isOpen, onClose, onRefresh }) => {
   const { token } = useAuth();
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const [importResult, setImportResult] = useState(null); // 🆕
 
   if (!isOpen) return null;
 
@@ -15,7 +16,6 @@ const ExportImportModal = ({ isOpen, onClose, onRefresh }) => {
     try {
       const data = await exportTasks(token);
       
-      // Create download
       const blob = new Blob([JSON.stringify(data, null, 2)], { 
         type: 'application/json' 
       });
@@ -57,19 +57,37 @@ const ExportImportModal = ({ isOpen, onClose, onRefresh }) => {
     if (!file) return;
 
     setIsImporting(true);
+    setImportResult(null); // 🆕 Reset results
+    
     try {
       const text = await file.text();
       const data = JSON.parse(text);
       
-      // Check if it's a valid export
       if (!data.data || !Array.isArray(data.data)) {
         throw new Error('Invalid file format. Expected tasks array.');
       }
 
       const result = await importTasks(token, data.data);
-      toast.success(result.message || 'Tasks imported successfully! 🎉');
+      
+      // 🆕 Set import results
+      setImportResult(result);
+      
+      let message = `✅ ${result.imported} tasks imported`;
+      if (result.duplicates > 0) {
+        message += `, ⏭️ ${result.duplicates} duplicates skipped`;
+      }
+      if (result.skipped > 0) {
+        message += `, ❌ ${result.skipped} invalid skipped`;
+      }
+      
+      toast.success(message);
       onRefresh();
-      onClose();
+      
+      // Close after 3 seconds on success
+      setTimeout(() => {
+        onClose();
+      }, 3000);
+      
     } catch (error) {
       if (error instanceof SyntaxError) {
         toast.error('Invalid JSON file');
@@ -132,6 +150,9 @@ const ExportImportModal = ({ isOpen, onClose, onRefresh }) => {
                 {isExporting ? '⏳ Exporting...' : '📊 CSV'}
               </button>
             </div>
+            <p className="text-xs mt-2" style={{ color: '#131214', opacity: 0.5 }}>
+              JSON: Full backup • CSV: Spreadsheet format
+            </p>
           </div>
 
           {/* Divider */}
@@ -160,8 +181,25 @@ const ExportImportModal = ({ isOpen, onClose, onRefresh }) => {
               />
             </label>
             <p className="text-xs mt-2" style={{ color: '#131214', opacity: 0.5 }}>
-              Import a JSON file exported from this app
+              Only JSON files exported from this app are supported
             </p>
+            
+            {importResult && (
+              <div className="mt-3 p-3 border-2" style={{ borderColor: '#131214', backgroundColor: '#FAF4E3' }}>
+                <p className="text-sm font-medium" style={{ color: '#131214' }}>
+                   Import Results:
+                </p>
+                <div className="flex flex-wrap gap-4 mt-1 text-xs">
+                  <span style={{ color: '#131214' }}> Imported: {importResult.imported}</span>
+                  {importResult.duplicates > 0 && (
+                    <span style={{ color: '#FF6B6B' }}> Duplicates skipped: {importResult.duplicates}</span>
+                  )}
+                  {importResult.skipped > 0 && (
+                    <span style={{ color: '#FF6B6B' }}> Invalid: {importResult.skipped}</span>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

@@ -1,17 +1,22 @@
 const DashboardHeader = ({ user, logout }) => {
   return (
     <header
-      className="border-b-2 bg-[var(--bg-primary)] z-50 fixed top-0 left-0 right-0"
-      style={{ borderColor: "var(--border-color)" }}
+      className="border-b-2 z-50 fixed top-0 left-0 right-0"
+      style={{ 
+        borderColor: '#131214',
+        backgroundColor: '#FAF4E3'  
+      }}
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center flex-wrap gap-4">
         <div className="flex items-center gap-4">
           <div className="text-4xl transform -rotate-6">✨</div>
           <div>
-            <h1 className="text-3xl font-black uppercase tracking-tighter">
-              taskor
+            <h1 className="text-3xl font-black uppercase tracking-tighter" style={{ color: '#131214' }}>
+              taskorbit
             </h1>
-            <p className="text-xs font-mono">organize the chaos</p>
+            <p className="text-xs font-mono" style={{ color: '#131214', opacity: 0.6 }}>
+              organize the chaos
+            </p>
           </div>
           <div className="w-2 h-2 bg-black rounded-full"></div>
           <div
@@ -26,7 +31,7 @@ const DashboardHeader = ({ user, logout }) => {
             <div className="w-6 h-6 border-2 border-black rounded-full flex items-center justify-center text-xs font-black">
               {user?.username?.charAt(0).toUpperCase()}
             </div>
-            <span className="text-sm font-mono font-bold">
+            <span className="text-sm font-mono font-bold" style={{ color: '#131214' }}>
               {user?.username}
             </span>
           </div>

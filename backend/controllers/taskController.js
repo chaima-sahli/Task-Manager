@@ -149,11 +149,11 @@ const exportTasks = async (req, res) => {
 };
 
 //  Import tasks
+
 const importTasks = async (req, res) => {
   try {
     const { tasks } = req.body;
 
-    // Validation
     if (!tasks || !Array.isArray(tasks) || tasks.length === 0) {
       return res.status(400).json({ 
         error: 'Invalid data. Please provide an array of tasks.' 
@@ -162,7 +162,12 @@ const importTasks = async (req, res) => {
 
     let importedCount = 0;
     let skippedCount = 0;
+    let duplicateCount = 0;
     const importedTasks = [];
+
+    //  Get existing tasks to check for duplicates
+    const existingTasks = await Task.find({ userId: req.userId });
+    const existingTitles = new Set(existingTasks.map(t => t.title.trim().toLowerCase()));
 
     for (const taskData of tasks) {
       // Validate required fields
@@ -171,9 +176,18 @@ const importTasks = async (req, res) => {
         continue;
       }
 
+      const title = taskData.title.trim();
+      const titleLower = title.toLowerCase();
+
+      //  Check for duplicate by title (case insensitive)
+      if (existingTitles.has(titleLower)) {
+        duplicateCount++;
+        continue;
+      }
+
       // Clean and prepare task data
       const newTask = new Task({
-        title: taskData.title.trim(),
+        title: title,
         description: taskData.description || '',
         status: ['todo', 'inprogress', 'done'].includes(taskData.status) 
           ? taskData.status 
@@ -184,12 +198,13 @@ const importTasks = async (req, res) => {
         dueDate: taskData.dueDate ? new Date(taskData.dueDate) : null,
         tags: Array.isArray(taskData.tags) ? taskData.tags : [],
         userId: req.userId,
-        position: 0 // Will be updated in bulk
+        position: 0
       });
 
       await newTask.save();
       importedCount++;
       importedTasks.push(newTask);
+      existingTitles.add(titleLower); 
     }
 
     // Reorder all tasks by position
@@ -199,11 +214,17 @@ const importTasks = async (req, res) => {
       await allTasks[i].save();
     }
 
+    // Build response message
+    let message = `Imported ${importedCount} tasks successfully.`;
+    if (skippedCount > 0) message += ` Skipped ${skippedCount} invalid tasks.`;
+    if (duplicateCount > 0) message += ` Skipped ${duplicateCount} duplicates.`;
+
     res.status(201).json({
       success: true,
-      message: `Imported ${importedCount} tasks successfully. Skipped ${skippedCount} invalid tasks.`,
+      message,
       imported: importedCount,
       skipped: skippedCount,
+      duplicates: duplicateCount,
       tasks: importedTasks
     });
   } catch (error) {
@@ -212,26 +233,64 @@ const importTasks = async (req, res) => {
   }
 };
 
-//  Export as CSV
+//  Export as CSV 
+
 const exportCSV = async (req, res) => {
   try {
     const tasks = await Task.find({ userId: req.userId }).lean();
 
-    // Define CSV headers
-    const headers = ['Title', 'Description', 'Status', 'Priority', 'Due Date', 'Tags', 'Created At'];
+    const headers = [
+      'Task ID',
+      'Title', 
+      'Description', 
+      'Status', 
+      'Priority', 
+      'Due Date', 
+      'Tags',
+      'Created At',
+      'Last Updated'
+    ];
     
-    // Build CSV rows
-    const rows = tasks.map(task => [
-      `"${(task.title || '').replace(/"/g, '""')}"`,
-      `"${(task.description || '').replace(/"/g, '""')}"`,
-      task.status || 'todo',
-      task.priority || 'medium',
-      task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '',
-      (task.tags || []).join('; '),
-      new Date(task.createdAt).toISOString().split('T')[0]
-    ]);
+    const rows = tasks.map(task => {
+      //  Format tags properly - wrap in quotes if they contain commas
+      let tags = (task.tags || []).join(', ');
+      if (tags.includes(',')) {
+        tags = `"${tags}"`; // Wrap in quotes to preserve commas
+      }
 
-    // Combine headers and rows
+      const dueDate = task.dueDate 
+        ? new Date(task.dueDate).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short', 
+            day: 'numeric'
+          })
+        : 'No due date';
+      
+      const createdAt = new Date(task.createdAt).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+      
+      const updatedAt = new Date(task.updatedAt).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+
+      return [
+        task._id.toString().slice(-8),
+        `"${(task.title || '').replace(/"/g, '""')}"`,
+        `"${(task.description || '').replace(/"/g, '""')}"`,
+        task.status || 'todo',
+        task.priority || 'medium',
+        dueDate,
+        tags, 
+        createdAt,
+        updatedAt
+      ];
+    });
+
     const csvContent = [
       headers.join(','),
       ...rows.map(row => row.join(','))
