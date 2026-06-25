@@ -12,12 +12,12 @@ const FloatingActionGroup = ({ onQuickAdd }) => {
 
   // Use the consolidated keyboard shortcuts
   useKeyboardShortcuts({
-    searchTerm: "", // Not needed here
+    searchTerm: "",
     showQuickAdd,
     showCalendar,
     showAnalytics,
     showShortcuts,
-    setSearchTerm: () => {}, // Not needed here
+    setSearchTerm: () => {}, 
     setShowQuickAdd,
     setShowCalendar,
     setShowAnalytics,

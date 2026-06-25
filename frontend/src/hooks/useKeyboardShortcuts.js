@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 export const useKeyboardShortcuts = ({
   searchTerm,
@@ -10,11 +10,12 @@ export const useKeyboardShortcuts = ({
   setShowQuickAdd,
   setShowCalendar,
   setShowShortcuts,
-  setShowAnalytics
+  setShowAnalytics,
 }) => {
   useEffect(() => {
     const handleKeyDown = (e) => {
-      const isInput = e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA";
+      const isInput =
+        e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA";
 
       // Ctrl+F or Cmd+F - Focus search
       if ((e.ctrlKey || e.metaKey) && e.key === "f") {
@@ -35,41 +36,25 @@ export const useKeyboardShortcuts = ({
 
       // Escape - Close modals first, then clear search
       if (e.key === "Escape") {
-        e.preventDefault();
-        e.stopPropagation();
-
-        // Close shortcuts modal
-        if (showShortcuts && setShowShortcuts) {
-          setShowShortcuts(false);
-          return;
-        }
-
-        // Close calendar
-        if (showCalendar && setShowCalendar) {
-          setShowCalendar(false);
-          return;
-        }
-        // Close analytics
-        if (showAnalytics && setShowAnalytics) {
-          setShowAnalytics(false);
-          return;
-        }
-
-        // Close quick add
-        if (showQuickAdd && setShowQuickAdd) {
-          setShowQuickAdd(false);
-          return;
-        }
-
-        // Clear search
-        if (searchTerm) {
-          setSearchTerm("");
-          return;
-        }
-
-        // Blur active element
-        if (document.activeElement) {
-          document.activeElement.blur();
+        // Check if ANY modal is open first
+        if (showShortcuts || showCalendar || showAnalytics || showQuickAdd) {
+          // Close modals without preventing default
+          if (showShortcuts && setShowShortcuts) {
+            setShowShortcuts(false);
+            return;
+          }
+          if (showCalendar && setShowCalendar) {
+            setShowCalendar(false);
+            return;
+          }
+          if (showAnalytics && setShowAnalytics) {
+            setShowAnalytics(false);
+            return;
+          }
+          if (showQuickAdd && setShowQuickAdd) {
+            setShowQuickAdd(false);
+            return;
+          }
         }
         return;
       }
@@ -84,7 +69,13 @@ export const useKeyboardShortcuts = ({
       }
 
       // 'n' key alone - Quick add (only if not in input)
-      if (e.key === "n" && !e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey) {
+      if (
+        e.key === "n" &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.altKey &&
+        !e.shiftKey
+      ) {
         if (!isInput) {
           e.preventDefault();
           e.stopPropagation();
@@ -96,7 +87,13 @@ export const useKeyboardShortcuts = ({
       }
 
       // 'n' key alone - Quick add (only if not in input)
-      if (e.key === "a" && !e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey) {
+      if (
+        e.key === "a" &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.altKey &&
+        !e.shiftKey
+      ) {
         if (!isInput) {
           e.preventDefault();
           e.stopPropagation();
@@ -118,5 +115,16 @@ export const useKeyboardShortcuts = ({
 
     window.addEventListener("keydown", handleKeyDown, true);
     return () => window.removeEventListener("keydown", handleKeyDown, true);
-  }, [searchTerm, showQuickAdd, showCalendar, showAnalytics, showShortcuts, setSearchTerm, setShowQuickAdd, setShowCalendar, setShowShortcuts, setShowAnalytics]);
+  }, [
+    searchTerm,
+    showQuickAdd,
+    showCalendar,
+    showAnalytics,
+    showShortcuts,
+    setSearchTerm,
+    setShowQuickAdd,
+    setShowCalendar,
+    setShowShortcuts,
+    setShowAnalytics,
+  ]);
 };

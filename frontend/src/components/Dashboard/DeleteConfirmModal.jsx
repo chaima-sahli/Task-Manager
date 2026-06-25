@@ -1,4 +1,33 @@
+import { useEffect, useRef } from "react";
+
 const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, taskTitle }) => {
+   const isOpenRef = useRef(isOpen);
+
+  useEffect(() => {
+    isOpenRef.current = isOpen;
+  }, [isOpen]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && isOpenRef.current) {
+        e.preventDefault();
+        e.stopPropagation();
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "unset";
+    };
+  }, [onClose]);
+  
   if (!isOpen) return null;
 
   return (
