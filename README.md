@@ -23,7 +23,7 @@
   <br />
   <br />
   
-  <img src="https://via.placeholder.com/800x400/FAF4E3/131214?text=Taskor+Screenshot" alt="Taskor Screenshot" width="80%" />
+  <!-- <img src="https://via.placeholder.com/800x400/FAF4E3/131214?text=Taskor+Screenshot" alt="Taskor Screenshot" width="80%" /> -->
 </div>
 
 ---
@@ -46,22 +46,40 @@
 | **Due Dates** | Set due dates with color-coded badges (today, tomorrow, overdue) |
 | **Search & Filter** | Real-time search with priority, status, and due date filters |
 | **Calendar View** | Monthly calendar with task counts and day details |
+| **Analytics Dashboard** | Visual insights with charts for status, priority, and completion trends |
+| **Tags/Labels** | Categorize tasks with custom colored tags |
 | **Stats Dashboard** | Quick overview of task statistics |
+| **Keyboard Shortcuts** | Power user shortcuts for faster task management |
+| **Neobrutalism Design** | bold, raw aesthetic with custom color palette |
 
 ### 🎨 Design Philosophy
 - **Neobrutalism-inspired** - Bold borders, black shadows
 - **Responsive** - Works on desktop, tablet, and mobile
 - **Accessible** - Keyboard shortcuts for power users
+- **Unique Color Palette** - Custom colors that stand out from typical SaaS apps
+
 
 
 ### ⌨️ Keyboard Shortcuts
 | Shortcut | Action |
 |----------|--------|
-| `n` | Open quick add task |
-| `⌘F` / `Ctrl+F` | Focus search |
-| `ESC` | Close modal / Clear search |
+| `n` | Open quick add task |  
+| `⌘F` / `Ctrl+F` | Focus search |  
+| `⌘C` / `Ctrl+C` | Open Calendar |  
+| `a`  | Open Analytics |  
+| `ESC` | Close modal / Clear search | 
 
 ---
+
+## Features in Progress
+
+| Feature | Status | Priority |
+|---------|--------|----------|
+| Dark Mode | Planning | High |
+| Export/Import Tasks | Planning | Medium |
+| Email Notifications | Planning | Medium |
+| Task Comments | Planning | Medium |
+| File Attachments | Planning | Low |
 
 ## Tech Stack
 
