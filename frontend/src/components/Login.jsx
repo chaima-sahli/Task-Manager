@@ -9,22 +9,31 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const { login, register } = useAuth();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    let result;
-    if (isLogin) {
-      result = await login(email, password);
-    } else {
-      result = await register(username, email, password);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  //  Password validation
+  if (!isLogin) {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      toast.error('Password must be 8+ characters with uppercase, lowercase, number, and special character');
+      return;
     }
-
-    if (result.success) {
-      toast.success(isLogin ? "Welcome back!" : "Account created!");
-    } else {
-      toast.error(result.error);
-    }
-  };
-
+  }
+  
+  let result;
+  if (isLogin) {
+    result = await login(email, password);
+  } else {
+    result = await register(username, email, password);
+  }
+  
+  if (result.success) {
+    toast.success(isLogin ? 'Welcome back! ' : 'Account created! ');
+  } else {
+    toast.error(result.error);
+  }
+};
   return (
     <div
       className='min-h-screen flex items-center justify-center p-4'
@@ -65,7 +74,7 @@ const Login = () => {
           <div className='text-center mb-8'>
             <div className='inline-block mb-4'>
               <div className='text-7xl transform -rotate-6 hover:rotate-0 transition-transform'>
-                ✨
+                📒
               </div>
             </div>
             <h1

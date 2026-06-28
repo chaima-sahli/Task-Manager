@@ -35,6 +35,7 @@ const FloatingActionGroup = ({ onQuickAdd, onRefresh }) => {
     { key: "ESC", action: "Close modal / Clear search" },
     { key: "⌘N / Ctrl+N", action: "Quick add (fallback)" },
     { key: "⌘C / Ctrl+C", action: "Open Calendar" },
+    { key: "a", action: "Open Analytics Dashboard" },
   ];
 
   return (

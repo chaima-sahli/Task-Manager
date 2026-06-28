@@ -9,10 +9,10 @@ const DashboardHeader = ({ user, logout }) => {
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center flex-wrap gap-4">
         <div className="flex items-center gap-4">
-          <div className="text-4xl transform -rotate-6">✨</div>
+          <div className="text-4xl transform -rotate-6">📒</div>
           <div>
             <h1 className="text-3xl font-black uppercase tracking-tighter" style={{ color: '#131214' }}>
-              taskorbit
+              taskor
             </h1>
             <p className="text-xs font-mono" style={{ color: '#131214', opacity: 0.6 }}>
               organize the chaos

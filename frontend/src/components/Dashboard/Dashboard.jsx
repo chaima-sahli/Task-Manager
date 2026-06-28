@@ -6,7 +6,6 @@ import DashboardStats from "../DashboardStats";
 import DashboardHeader from "./DashboardHeader";
 import DashboardFilters from "./DashboardFilters";
 import FloatingActionGroup from "./FloatingActionGroup";
-import KeyboardShortcuts from "./KeyboardShortcuts";
 import { useKeyboardShortcuts } from "../../hooks/useKeyboardShortcuts";
 import toast from "react-hot-toast";
 

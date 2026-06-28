@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { exportTasks, exportTasksCSV, importTasks } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
@@ -8,6 +8,26 @@ const ExportImportModal = ({ isOpen, onClose, onRefresh }) => {
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [importResult, setImportResult] = useState(null); // 🆕
+  //  ESC key handler
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        e.preventDefault();
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEsc);
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEsc);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen, onClose]);
+
 
   if (!isOpen) return null;
 
@@ -106,7 +126,7 @@ const ExportImportModal = ({ isOpen, onClose, onRefresh }) => {
       onClick={onClose}
     >
       <div
-        className="bg-white border-2 w-full max-w-md"
+        className="bg-white border-2 w-full max-w-md modal-pop-in"
         style={{ borderColor: '#131214' }}
         onClick={(e) => e.stopPropagation()}
       >
