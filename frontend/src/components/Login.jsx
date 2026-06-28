@@ -7,39 +7,41 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const { login, register } = useAuth();
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  
-  //  Password validation
-  if (!isLogin) {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    if (!passwordRegex.test(password)) {
-      toast.error('Password must be 8+ characters with uppercase, lowercase, number, and special character');
-      return;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Password validation
+    if (!isLogin) {
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      if (!passwordRegex.test(password)) {
+        toast.error('Password must be 8+ characters with uppercase, lowercase, number, and special character');
+        return;
+      }
     }
-  }
-  
-  let result;
-  if (isLogin) {
-    result = await login(email, password);
-  } else {
-    result = await register(username, email, password);
-  }
-  
-  if (result.success) {
-    toast.success(isLogin ? 'Welcome back! ' : 'Account created! ');
-  } else {
-    toast.error(result.error);
-  }
-};
+    
+    let result;
+    if (isLogin) {
+      result = await login(email, password);
+    } else {
+      result = await register(username, email, password);
+    }
+    
+    if (result.success) {
+      toast.success(isLogin ? 'Welcome back! ✨' : 'Account created! 🎉');
+    } else {
+      toast.error(result.error);
+    }
+  };
+
   return (
     <div
       className='min-h-screen flex items-center justify-center p-4'
       style={{ backgroundColor: "#FAF4E3" }}
     >
-      {/* Brutalist background elements */}
+      {/* Background elements */}
       <div
         className='fixed top-0 left-0 w-64 h-64'
         style={{
@@ -62,11 +64,11 @@ const handleSubmit = async (e) => {
             className='px-3 py-1 text-xs font-bold uppercase'
             style={{ backgroundColor: "#F6D76A", border: "2px solid #131214" }}
           >
-            Organized Chaos{" "}
+            Organized Chaos ✨
           </div>
         </div>
 
-        {/* Main card - neo brutalist */}
+        {/* Main card */}
         <div
           className='relative bg-white border-4 border-black p-8'
           style={{ boxShadow: "12px 12px 0 0 #131214" }}
@@ -82,7 +84,6 @@ const handleSubmit = async (e) => {
               style={{ color: "#131214" }}
             >
               taskor
-             
             </h1>
             <div className='flex items-center justify-center gap-2 mt-3'>
               <div className='w-2 h-2 bg-black'></div>
@@ -128,15 +129,30 @@ const handleSubmit = async (e) => {
               <label className='block text-xs font-bold uppercase mb-1 tracking-wider'>
                 Password
               </label>
-              <input
-                type='password'
-                placeholder='••••••••'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className='w-full px-4 py-3 border-2 border-black bg-white font-mono'
-                style={{ boxShadow: "inset 2px 2px 0 0 rgba(0,0,0,0.1)" }}
-                required
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder='••••••••'
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className='w-full px-4 py-3 border-2 border-black bg-white font-mono transition-all duration-200 pr-12'
+                  style={{ boxShadow: "inset 2px 2px 0 0 rgba(0,0,0,0.1)" }}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xl hover:scale-110 transition-transform"
+                  style={{ color: '#131214', opacity: 0.5 }}
+                >
+                  {showPassword ? '👁️' : '🔒'}
+                </button>
+              </div>
+              {!isLogin && (
+                <p className="text-xs mt-1 font-mono" style={{ color: '#131214', opacity: 0.4 }}>
+                  Must be 8+ chars with uppercase, lowercase, number, and special character
+                </p>
+              )}
             </div>
             <button
               type='submit'
