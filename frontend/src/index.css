@@ -9,24 +9,41 @@
   }
   
   /* Clean scrollbar */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-  
-  ::-webkit-scrollbar-track {
-    background: #fffbf0;
-    border-radius: 20px;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background: #B6CAEC;
-    border-radius: 20px;
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background: #F7B7DA;
-  }
+ /* 🎨 Brutalist Scrollbar */
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FAF4E3;
+  border: 2px solid #131214;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #F7B7DA;
+  border: 2px solid #131214;
+  border-radius: 0; 
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #F6D76A;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #B6CAEC;
+}
+
+::-webkit-scrollbar-corner {
+  background: #FAF4E3;
+  border: 2px solid #131214;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thick;
+  scrollbar-color: #F7B7DA #FAF4E3;
+}
 }
 
 /* Smooth transitions */
